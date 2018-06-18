@@ -1,0 +1,45 @@
+/**
+ *  \file se3_cmd.h
+ *  \author Nicola Ferri
+ *  \brief L0 command dispatch and execute
+ */
+
+#pragma once
+
+#include "se3c0.h"
+
+
+typedef struct SE3_L1_GLOBALS_ {
+    SE3_LOGIN_STATUS login;
+    SE3_RECORD_INFO records[SE3_RECORD_MAX];
+    se3_mem sessions;
+    uint16_t sessions_algo[SE3_SESSIONS_MAX];
+} SE3_L1_GLOBALS;
+
+
+/** \brief Execute received command
+ *  
+ *  Process the last received request and produce a response
+ */
+void se3_cmd_execute();
+
+
+/** \brief L0 ECHO command handler
+ *
+ *  Send back received data
+ */
+uint16_t L0d_echo(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
+
+/** \brief L0 FACTORY_INIT command handler
+ *
+ *  Initialize device's serial number
+ */
+uint16_t L0d_factory_init(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
+
+
+/** \brief L0 FACTORY_INIT command handler
+ *
+ *  Reset USEcube to boot mode
+ */
+uint16_t L0d_bootmode_reset(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
+

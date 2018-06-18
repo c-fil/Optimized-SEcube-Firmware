@@ -1,0 +1,15 @@
+/**
+ *  \file se3_cmd1.c
+ *  \author Nicola Ferri
+ *  \brief L1 command dispatch and execute
+ */
+
+#include "se3_cmd1.h"
+#include "se3_cmd1_login.h"
+#include "se3_cmd1_config.h"
+#include "se3_cmd1_keys.h"
+#include "se3_cmd1_crypto.h"
+#ifndef CUBESIM
+#include "se3_rand.h"
+#endif
+

@@ -1,0 +1,9 @@
+/**
+ *  \file se3_cmd1_config.c
+ *  \author Nicola Ferri
+ *  \brief L1 handlers for configuration record operations
+ */
+
+#include "se3_cmd1_config.h"
+
+

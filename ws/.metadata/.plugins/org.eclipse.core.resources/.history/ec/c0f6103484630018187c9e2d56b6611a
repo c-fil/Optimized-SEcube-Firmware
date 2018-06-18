@@ -1,0 +1,15 @@
+/**
+ *  \file se3_cmd1_config.h
+ *  \author Nicola Ferri
+ *  \brief L1 handlers for configuration record operations
+ */
+
+#pragma once
+#include "se3c1.h"
+
+/** \brief L1 CONFIG command handler
+ *  
+ *  Get or set a configuration record
+ */
+
+
