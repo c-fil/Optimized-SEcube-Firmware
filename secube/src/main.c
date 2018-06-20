@@ -107,6 +107,8 @@ int main(void)
 
 	device_loop();
 	/* USER CODE END  */
+
+
 	return 0;
 }
 

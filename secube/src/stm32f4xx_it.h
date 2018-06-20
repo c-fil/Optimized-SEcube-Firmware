@@ -50,6 +50,7 @@ void SDIO_IRQHandler(void);
 void DMA2_Stream3_IRQHandler(void);
 void DMA2_Stream6_IRQHandler(void);
 void OTG_HS_IRQHandler(void);
+void TIM2_IRQHandler(void);
 
 #ifdef __cplusplus
 }
