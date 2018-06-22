@@ -7,19 +7,12 @@
 #include "se3_core.h"
 #include "se3_communication_core.h"
 #include "se3_dispatcher_core.h"
-
 //#include "crc16.h"
 #include "se3_rand.h"
 
 
 #define SE3_FLASH_SIGNATURE_ADDR  ((uint32_t)0x08020000)
 #define SE3_FLASH_SIGNATURE_SIZE  ((size_t)0x40)
-
-
-
-
-
-
 
 uint8_t se3_sessions_buf[SE3_SESSIONS_BUF];
 uint8_t* se3_sessions_index[SE3_SESSIONS_MAX];
@@ -44,7 +37,6 @@ void device_loop()
 		}
 	}
 }
-
 
 static uint16_t invalid_cmd_handler(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp)
 {
@@ -156,16 +148,16 @@ void se3_cmd_execute()
 		switch (req_hdr.cmd) {
 		case SE3_CMD0_MIX:
 			set_req_hdr(req_hdr);
-			handler = L0d_cmd1;
+			handler = dispatcher_call;
 			break;
 		case SE3_CMD0_ECHO:
-			handler = L0d_echo;
+			handler = echo;
 			break;
 		case SE3_CMD0_FACTORY_INIT:
-			handler = L0d_factory_init;
+			handler = factory_init;
 			break;
 		case SE3_CMD0_BOOT_MODE_RESET:
-			handler = L0d_bootmode_reset;
+			handler = bootmode_reset;
 			break;
 		default:
 			handler = invalid_cmd_handler;
@@ -187,23 +179,14 @@ update_comm:
     comm.resp_bmap = SE3_BMAP_MAKE(resp_blocks);
 }
 
-/**
- *  \file se3_cmd0.c
- *  \author Nicola Ferri
- *  \brief L0 command handlers
- */
-
-
-
-
-uint16_t L0d_echo(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp)
+uint16_t echo(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp)
 {
     memcpy(resp, req, req_size);
     *resp_size = req_size;
     return SE3_OK;
 }
 
-uint16_t L0d_factory_init(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp)
+uint16_t factory_init(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp)
 {
     enum {
         OFF_SERIAL = 0
@@ -228,8 +211,7 @@ uint16_t L0d_factory_init(uint16_t req_size, const uint8_t* req, uint16_t* resp_
     return SE3_OK;
 }
 
-
-uint16_t L0d_bootmode_reset(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp)
+uint16_t bootmode_reset(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp)
 {
 
 	if(!(se3_flash_bootmode_reset(SE3_FLASH_SIGNATURE_ADDR, SE3_FLASH_SIGNATURE_SIZE)))
@@ -237,8 +219,3 @@ uint16_t L0d_bootmode_reset(uint16_t req_size, const uint8_t* req, uint16_t* res
 
 	return SE3_OK;
 }
-/** \brief L0 command which executes an L1 command
- *
- *  This handler also manages encryption and login token check
- */
-

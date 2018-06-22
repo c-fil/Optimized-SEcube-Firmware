@@ -6,9 +6,6 @@
 
 #include "se3_security_core.h"
 #include "se3_flash.h"
-
-
-
 #include "se3_algo_Aes.h"
 #include "se3_algo_sha256.h"
 #include "se3_algo_HmacSha256.h"
@@ -17,7 +14,7 @@
 
 
 /* Cryptographic algorithms handlers and display info */
-se3_algo_descriptor L1d_algo_table[SE3_ALGO_MAX] = {
+se3_algo_descriptor algo_table[SE3_ALGO_MAX] = {
 	{
 		se3_algo_Aes_init,
 		se3_algo_Aes_update,
@@ -70,7 +67,7 @@ union {
 
 
 
-static bool se3c1_record_find(uint16_t record_type, se3_flash_it* it)
+static bool record_find(uint16_t record_type, se3_flash_it* it)
 {
     uint16_t it_record_type = 0;
     while (se3_flash_it_next(it)) {
@@ -84,7 +81,7 @@ static bool se3c1_record_find(uint16_t record_type, se3_flash_it* it)
     return false;
 }
 
-bool se3c1_record_set(uint16_t type, const uint8_t* data)
+bool record_set(uint16_t type, const uint8_t* data)
 {
     se3_flash_it it;
     bool found = false;
@@ -94,7 +91,7 @@ bool se3c1_record_set(uint16_t type, const uint8_t* data)
         return false;
     }
     se3_flash_it_init(&it);
-    if (se3c1_record_find(type, &it)) {
+    if (record_find(type, &it)) {
         found = true;
     }
 
@@ -123,14 +120,14 @@ bool se3c1_record_set(uint16_t type, const uint8_t* data)
 }
 
 
-bool se3c1_record_get(uint16_t type, uint8_t* data)
+bool record_get(uint16_t type, uint8_t* data)
 {
     se3_flash_it it;
     if (type >= SE3_RECORD_MAX) {
         return false;
     }
     se3_flash_it_init(&it);
-    if (!se3c1_record_find(type, &it)) {
+    if (!record_find(type, &it)) {
         return false;
     }
     memcpy(data, it.addr + SE3_RECORD_OFFSET_DATA, SE3_RECORD_SIZE);
@@ -142,7 +139,7 @@ bool se3c1_record_get(uint16_t type, uint8_t* data)
  *
  *  L1_crypto_init : (algo:ui16, mode:ui16, key_id:ui32) => (sid:ui32)
  */
-uint16_t L1d_crypto_init(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp)
+uint16_t crypto_init(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp)
 {
     struct {
         uint16_t algo;
@@ -161,12 +158,12 @@ uint16_t L1d_crypto_init(uint16_t req_size, const uint8_t* req, uint16_t* resp_s
     uint8_t* ctx;
 
     if (req_size != SE3_CMD1_CRYPTO_INIT_REQ_SIZE) {
-        SE3_TRACE(("[L1d_crypto_init] req size mismatch\n"));
+        SE3_TRACE(("[crypto_init] req size mismatch\n"));
         return SE3_ERR_PARAMS;
     }
 
 //    if (!se3c1.login.y) {
-//        SE3_TRACE(("[L1d_crypto_init] not logged in\n"));
+//        SE3_TRACE(("[crypto_init] not logged in\n"));
 //        return SE3_ERR_ACCESS;
 //    }
 
@@ -175,10 +172,10 @@ uint16_t L1d_crypto_init(uint16_t req_size, const uint8_t* req, uint16_t* resp_s
     SE3_GET32(req, SE3_CMD1_CRYPTO_INIT_REQ_OFF_KEY_ID, req_params.key_id);
 
     if (req_params.algo < SE3_ALGO_MAX) {
-        handler = L1d_algo_table[req_params.algo].init;
+        handler = algo_table[req_params.algo].init;
     }
     if (handler == NULL) {
-        SE3_TRACE(("[L1d_crypto_init] algo not found\n"));
+        SE3_TRACE(("[crypto_init] algo not found\n"));
         return SE3_ERR_PARAMS;
     }
 
@@ -197,32 +194,32 @@ uint16_t L1d_crypto_init(uint16_t req_size, const uint8_t* req, uint16_t* resp_s
             it.addr = NULL;
         }
         if (NULL == it.addr) {
-            SE3_TRACE(("[L1d_crypto_init] key not found\n"));
+            SE3_TRACE(("[crypto_init] key not found\n"));
             return SE3_ERR_RESOURCE;
         }
         se3_key_read(&it, &key);
 
 		if (key.validity < se3c0_time_get() || !(get_now_initialized())) {
-			SE3_TRACE(("[L1d_crypto_init] key expired\n"));
+			SE3_TRACE(("[crypto_init] key expired\n"));
 			return SE3_ERR_EXPIRED;
 		}
     }
 
     resp_params.sid = SE3_SESSION_INVALID;
-    sid = se3_mem_alloc(&(se3c1.sessions), L1d_algo_table[req_params.algo].size);
+    sid = se3_mem_alloc(&(se3c1.sessions), algo_table[req_params.algo].size);
     if (sid >= 0) {
         resp_params.sid = (uint32_t)sid;
     }
 
     if (resp_params.sid == SE3_SESSION_INVALID) {
-        SE3_TRACE(("[L1d_crypto_init] cannot allocate session\n"));
+        SE3_TRACE(("[crypto_init] cannot allocate session\n"));
         return SE3_ERR_MEMORY;
     }
 
     ctx = se3_mem_ptr(&(se3c1.sessions), sid);
     if (ctx == NULL) {
         // this should not happen
-        SE3_TRACE(("[L1d_crypto_init] NULL session pointer\n"));
+        SE3_TRACE(("[crypto_init] NULL session pointer\n"));
         return SE3_ERR_HW;
     }
 
@@ -232,7 +229,7 @@ uint16_t L1d_crypto_init(uint16_t req_size, const uint8_t* req, uint16_t* resp_s
         // free the allocated session
         se3_mem_free(&(se3c1.sessions), (int32_t)resp_params.sid);
 
-        SE3_TRACE(("[L1d_crypto_init] crypto handler failed\n"));
+        SE3_TRACE(("[crypto_init] crypto handler failed\n"));
         return status;
     }
 
@@ -254,7 +251,7 @@ uint16_t L1d_crypto_init(uint16_t req_size, const uint8_t* req, uint16_t* resp_s
  *      datain1[datain1-len], pad-to-16[...], datain2[datain2-len])
  *  => (dataout-len, pad-to-16[14], dataout[dataout-len])
  */
-uint16_t L1d_crypto_update(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp)
+uint16_t crypto_update(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp)
 {
     struct {
         uint32_t sid;
@@ -275,12 +272,12 @@ uint16_t L1d_crypto_update(uint16_t req_size, const uint8_t* req, uint16_t* resp
     uint16_t status;
 
     if (req_size < SE3_CMD1_CRYPTO_UPDATE_REQ_OFF_DATA) {
-        SE3_TRACE(("[L1d_crypto_update] req size mismatch\n"));
+        SE3_TRACE(("[crypto_update] req size mismatch\n"));
         return SE3_ERR_PARAMS;
     }
 
 //    if (!se3c1.login.y) {
-//        SE3_TRACE(("[L1d_crypto_update] not logged in\n"));
+//        SE3_TRACE(("[crypto_update] not logged in\n"));
 //        return SE3_ERR_ACCESS;
 //    }
 
@@ -298,30 +295,30 @@ uint16_t L1d_crypto_update(uint16_t req_size, const uint8_t* req, uint16_t* resp
     req_params.datain2 = req + SE3_CMD1_CRYPTO_UPDATE_REQ_OFF_DATA + datain1_len_padded;
 
     if (SE3_CMD1_CRYPTO_UPDATE_REQ_OFF_DATA + datain1_len_padded + req_params.datain2_len > SE3_REQ1_MAX_DATA) {
-        SE3_TRACE(("[L1d_crypto_update] data size exceeds packet limit\n"));
+        SE3_TRACE(("[crypto_update] data size exceeds packet limit\n"));
         return SE3_ERR_PARAMS;
     }
 
     if (req_params.sid >= SE3_SESSIONS_MAX) {
-        SE3_TRACE(("[L1d_crypto_update] invalid sid\n"));
+        SE3_TRACE(("[crypto_update] invalid sid\n"));
         return SE3_ERR_RESOURCE;
     }
 
     algo = se3c1.sessions_algo[req_params.sid];
     if (algo >= SE3_ALGO_MAX) {
-        SE3_TRACE(("[L1d_crypto_update] invalid algo for this sid (wrong sid?)\n"));
+        SE3_TRACE(("[crypto_update] invalid algo for this sid (wrong sid?)\n"));
         return SE3_ERR_RESOURCE;
     }
 
-    handler = L1d_algo_table[algo].update;
+    handler = algo_table[algo].update;
     if (handler == NULL) {
-        SE3_TRACE(("[L1d_crypto_update] invalid crypto handler for this algo (wrong sid?)\n"));
+        SE3_TRACE(("[crypto_update] invalid crypto handler for this algo (wrong sid?)\n"));
         return SE3_ERR_RESOURCE;
     }
 
     ctx = se3_mem_ptr(&(se3c1.sessions), (int32_t)req_params.sid);
     if (ctx == NULL) {
-        SE3_TRACE(("[L1d_crypto_update] session not found\n"));
+        SE3_TRACE(("[crypto_update] session not found\n"));
         return SE3_ERR_RESOURCE;
     }
 
@@ -335,7 +332,7 @@ uint16_t L1d_crypto_update(uint16_t req_size, const uint8_t* req, uint16_t* resp
         &(resp_params.dataout_len), resp_params.dataout);
 
     if (SE3_OK != status) {
-        SE3_TRACE(("[L1d_crypto_update] crypto handler failed\n"));
+        SE3_TRACE(("[crypto_update] crypto handler failed\n"));
         return status;
     }
 
@@ -354,18 +351,18 @@ uint16_t L1d_crypto_update(uint16_t req_size, const uint8_t* req, uint16_t* resp
  *
  *  crypto_set_time : (devtime:ui32) => ()
  */
-uint16_t L1d_crypto_set_time(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp)
+uint16_t crypto_set_time(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp)
 {
     struct {
         uint32_t devtime;
     } req_params;
 
     if (req_size != SE3_CMD1_CRYPTO_SET_TIME_REQ_SIZE) {
-        SE3_TRACE(("[L1d_crypto_set_time] req size mismatch\n"));
+        SE3_TRACE(("[crypto_set_time] req size mismatch\n"));
         return SE3_ERR_PARAMS;
     }
 //    if (!se3c1.login.y) {
-//        SE3_TRACE(("[L1d_crypto_set_time] not logged in\n"));
+//        SE3_TRACE(("[crypto_set_time] not logged in\n"));
 //        return SE3_ERR_ACCESS;
 //    }
 
@@ -381,7 +378,7 @@ uint16_t L1d_crypto_set_time(uint16_t req_size, const uint8_t* req, uint16_t* re
  *  crypto_list : () => (count:ui16, algoinfo0, algoinfo1, ...)
  *      algoinfo : (name[16], type:u16, block_size:u16, key_size:u16)
  */
-uint16_t L1d_crypto_list(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp)
+uint16_t crypto_list(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp)
 {
     struct {
         uint16_t count;
@@ -392,11 +389,11 @@ uint16_t L1d_crypto_list(uint16_t req_size, const uint8_t* req, uint16_t* resp_s
     uint16_t size;
 
     if (req_size != SE3_CMD1_CRYPTO_LIST_REQ_SIZE) {
-        SE3_TRACE(("[L1d_crypto_list] req size mismatch\n"));
+        SE3_TRACE(("[crypto_list] req size mismatch\n"));
         return SE3_ERR_PARAMS;
     }
 //    if (!se3c1.login.y) {
-//        SE3_TRACE(("[L1d_crypto_list] not logged in\n"));
+//        SE3_TRACE(("[crypto_list] not logged in\n"));
 //        return SE3_ERR_ACCESS;
 //    }
 
@@ -406,11 +403,11 @@ uint16_t L1d_crypto_list(uint16_t req_size, const uint8_t* req, uint16_t* resp_s
     resp_params.count = 0;
     p = resp_params.algoinfo;
     for (i = 0; i < SE3_ALGO_MAX; i++) {
-        if ((L1d_algo_table[i].init != NULL) && (L1d_algo_table[i].update != NULL)) {
-            memcpy(p + SE3_CMD1_CRYPTO_ALGOINFO_OFF_NAME, L1d_algo_table[i].display_name, SE3_CMD1_CRYPTO_ALGOINFO_NAME_SIZE);
-            SE3_SET16(p, SE3_CMD1_CRYPTO_ALGOINFO_OFF_TYPE, L1d_algo_table[i].display_type);
-            SE3_SET16(p, SE3_CMD1_CRYPTO_ALGOINFO_OFF_BLOCK_SIZE, L1d_algo_table[i].display_block_size);
-            SE3_SET16(p, SE3_CMD1_CRYPTO_ALGOINFO_OFF_KEY_SIZE, L1d_algo_table[i].display_key_size);
+        if ((algo_table[i].init != NULL) && (algo_table[i].update != NULL)) {
+            memcpy(p + SE3_CMD1_CRYPTO_ALGOINFO_OFF_NAME, algo_table[i].display_name, SE3_CMD1_CRYPTO_ALGOINFO_NAME_SIZE);
+            SE3_SET16(p, SE3_CMD1_CRYPTO_ALGOINFO_OFF_TYPE, algo_table[i].display_type);
+            SE3_SET16(p, SE3_CMD1_CRYPTO_ALGOINFO_OFF_BLOCK_SIZE, algo_table[i].display_block_size);
+            SE3_SET16(p, SE3_CMD1_CRYPTO_ALGOINFO_OFF_KEY_SIZE, algo_table[i].display_key_size);
 
             (resp_params.count)++;
             size += SE3_CMD1_CRYPTO_ALGOINFO_SIZE;

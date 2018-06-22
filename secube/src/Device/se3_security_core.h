@@ -85,7 +85,7 @@ typedef struct se3_payload_cryptoctx_ {
  *  \param data new data to be written to record
  *  \return true on success; false if the record does not exist
  */
-bool se3c1_record_set(uint16_t type, const uint8_t* data);
+bool record_set(uint16_t type, const uint8_t* data);
 
 /** \brief Read record
 *
@@ -94,7 +94,7 @@ bool se3c1_record_set(uint16_t type, const uint8_t* data);
 *  \param data output buffer
 *  \return true on success; false if the record does not exist or has never been written
 */
-bool se3c1_record_get(uint16_t type, uint8_t* data);
+bool record_get(uint16_t type, uint8_t* data);
 
 
 // ---- crypto ----
@@ -103,25 +103,25 @@ bool se3c1_record_get(uint16_t type, uint8_t* data);
  *
  *  Initialize a cryptographic context
  */
-uint16_t L1d_crypto_init(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
+uint16_t crypto_init(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
 
 /** \brief L1 CRYPTO_UPDATE handler
  *
  *  Use a cryptographic context
  */
-uint16_t L1d_crypto_update(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
+uint16_t crypto_update(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
 
 /** \brief L1 CRYPTO_SET_TIME handler
  *
  *  Set device time for key validity
  */
-uint16_t L1d_crypto_set_time(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
+uint16_t crypto_set_time(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
 
 /** \brief L1 CRYPTO_SET_TIME handler
  *
  *  Get list of available algorithms
  */
-uint16_t L1d_crypto_list(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
+uint16_t crypto_list(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
 
 void se3_security_core_init();
 
@@ -140,4 +140,4 @@ extern uint8_t se3_sessions_buf[SE3_SESSIONS_BUF];
 extern uint8_t* se3_sessions_index[SE3_SESSIONS_MAX];
 
 /** algorithm description table */
-extern se3_algo_descriptor L1d_algo_table[SE3_ALGO_MAX];
+extern se3_algo_descriptor algo_table[SE3_ALGO_MAX];
