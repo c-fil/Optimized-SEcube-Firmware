@@ -2,9 +2,11 @@
 #include <se3c0def.h>
 #include <stdbool.h>
 #include "se3_keys.h"
+#include "se3_common.h"
 // ---- L1 structures ----
 
-#define SE3_CMD1_MAX (16)
+#define SE3_CMD1_MAX 	16
+#define SE3_N_HARDWARE 	3
 
 enum {
 	SE3_SECURITY_CORE,
@@ -12,13 +14,7 @@ enum {
 	SE3_SMARTCARD
 }se3_algo_impl_t;
 
-typedef struct se3_payload_cryptoctx_ {
-	B5_tAesCtx aesenc;
-    B5_tAesCtx aesdec;
-	B5_tHmacSha256Ctx hmac;
-	uint8_t hmac_key[B5_AES_256];
-    uint8_t auth[B5_SHA256_DIGEST_SIZE];
-} se3_payload_cryptoctx;
+
 
 /** \brief L1 login status data */
 typedef struct SE3_LOGIN_STATUS_ {
@@ -37,12 +33,7 @@ typedef struct SE3_LOGIN_STATUS_ {
 SE3_LOGIN_STATUS login;
 
 
-
-
 typedef uint16_t(*se3_cmd_func)(uint16_t, const uint8_t*, uint16_t*, uint8_t*);
-
-
-
 
 
 uint16_t L1d_config(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
@@ -83,7 +74,6 @@ uint16_t L1d_error(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, u
 
 uint16_t L0d_cmd1(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
 
-
 /** \brief Clear login session data
  *
  *  Cleans all data associated with the login session, making SEcube ready for a new login.
@@ -93,16 +83,10 @@ void se3c1_login_cleanup();
 /** \brief Initialize L1 structures */
 void se3_dispatcher_init();
 
+void set_req_hdr(se3c0_req_header req_hdr_i);
 
-
-
-
-void se3_payload_cryptoinit(se3_payload_cryptoctx* ctx, const uint8_t* key);
-void se3_payload_encrypt(se3_payload_cryptoctx* ctx, uint8_t* auth, uint8_t* iv, uint8_t* data, uint16_t nblocks, uint16_t flags);
-bool se3_payload_decrypt(se3_payload_cryptoctx* ctx, const uint8_t* auth, const uint8_t* iv, uint8_t* data, uint16_t nblocks, uint16_t flags);
-
-
-static se3_cmd_func L1d_handlers[SE3_CMD1_MAX] = {
+static se3_cmd_func L1d_handlers[SE3_N_HARDWARE][SE3_CMD1_MAX] = {{
+//Security Core
     /* 0  */ NULL,
     /* 1  */ L1d_challenge,
     /* 2  */ L1d_login,
@@ -119,7 +103,44 @@ static se3_cmd_func L1d_handlers[SE3_CMD1_MAX] = {
     /* 13 */ NULL,
     /* 14 */ NULL,
     /* 15 */ L1d_error
-};
+}, {
+//FPGA
+    /* 0  */ NULL,
+    /* 1  */ NULL,
+    /* 2  */ NULL,
+    /* 3  */ NULL,
+    /* 4  */ NULL,
+    /* 5  */ NULL,
+    /* 6  */ NULL,
+    /* 7  */ NULL,
+    /* 8  */ NULL,
+    /* 9  */ NULL,
+    /* 10 */ NULL,
+    /* 11 */ NULL,
+    /* 12 */ NULL,
+    /* 13 */ NULL,
+    /* 14 */ NULL,
+    /* 15 */ NULL
+}, {
+//Smartcard
+    /* 0  */ NULL,
+    /* 1  */ NULL,
+    /* 2  */ NULL,
+    /* 3  */ NULL,
+    /* 4  */ NULL,
+    /* 5  */ NULL,
+    /* 6  */ NULL,
+    /* 7  */ NULL,
+    /* 8  */ NULL,
+    /* 9  */ NULL,
+    /* 10 */ NULL,
+    /* 11 */ NULL,
+    /* 12 */ NULL,
+    /* 13 */ NULL,
+    /* 14 */ NULL,
+    /* 15 */ NULL
+}};
+
 
 
 

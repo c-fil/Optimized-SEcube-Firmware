@@ -1,10 +1,7 @@
 #include "se3_dispatcher_core.h"
 
-union {
-    B5_tSha256Ctx sha;
-    B5_tAesCtx aes;
-} ctx;
 
+se3c0_req_header req_hdr;
 //IF(struttura.implementation == SE3_FPGA)
 
 uint16_t L1d_error(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp)
@@ -447,6 +444,121 @@ uint16_t L1d_key_list(uint16_t req_size, const uint8_t* req, uint16_t* resp_size
     return SE3_OK;
 }
 
+uint16_t L0d_cmd1(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp)
+{
+    se3_cmd_func handler = NULL;
+    uint16_t resp1_size, req1_size;
+    uint16_t resp1_size_padded;
+    const uint8_t* req1;
+    uint8_t* resp1;
+    uint16_t status;
+    struct {
+        const uint8_t* auth;
+        const uint8_t* iv;
+        const uint8_t* token;
+        uint16_t len;
+        uint16_t cmd;
+        const uint8_t* data;
+    } req_params;
+    struct {
+        uint8_t* auth;
+        uint8_t* iv;
+        uint8_t* token;
+        uint16_t len;
+        uint16_t status;
+        uint8_t* data;
+    } resp_params;
+
+    req_params.auth = req + SE3_REQ1_OFFSET_AUTH;
+    req_params.iv = req + SE3_REQ1_OFFSET_IV;
+    req_params.token = req + SE3_REQ1_OFFSET_TOKEN;
+    req_params.data = req + SE3_REQ1_OFFSET_DATA;
+
+    if (req_size < SE3_REQ1_OFFSET_DATA) {
+        SE3_TRACE(("[L0d_cmd1] insufficient req size\n"));
+        return SE3_ERR_COMM;
+    }
+
+    // prepare request
+    if (!login.cryptoctx_initialized) {
+        se3_payload_cryptoinit(&(login.cryptoctx), login.key);
+        login.cryptoctx_initialized = true;
+    }
+    if (!se3_payload_decrypt(
+        &(login.cryptoctx), req_params.auth, req_params.iv,
+        /* !! modifying request */ (uint8_t*)(req  + SE3_L1_AUTH_SIZE + SE3_L1_IV_SIZE),
+        (req_size - SE3_L1_AUTH_SIZE - SE3_L1_IV_SIZE) / SE3_L1_CRYPTOBLOCK_SIZE, req_hdr.cmd_flags))
+    {
+        SE3_TRACE(("[L0d_cmd1] AUTH failed\n"));
+        return SE3_ERR_COMM;
+    }
+
+    if (login.y) {
+        if (memcmp(login.token, req_params.token, SE3_L1_TOKEN_SIZE)) {
+            SE3_TRACE(("[L0d_cmd1] login token mismatch\n"));
+            return SE3_ERR_ACCESS;
+        }
+    }
+
+
+    SE3_GET16(req, SE3_REQ1_OFFSET_LEN, req_params.len);
+    SE3_GET16(req, SE3_REQ1_OFFSET_CMD, req_params.cmd);
+    if (req_params.cmd < SE3_CMD1_MAX) {
+    	if (req_params.cmd > 6 && req_params.cmd < 11 && !login.y) {   //
+    		SE3_TRACE(("[L1d_crypto_init] not logged in\n"));		   //  TODO: ADDED BY US
+    		return SE3_ERR_ACCESS;                                     //
+    	}															   //
+        handler = L1d_handlers[SE3_SECURITY_CORE][req_params.cmd];
+    }
+    if (handler == NULL) {
+        handler = L1d_error;
+    }
+
+    req1 = req_params.data;
+    req1_size = req_params.len;
+    resp1 = resp + SE3_RESP1_OFFSET_DATA;
+    resp1_size = 0;
+
+    status = handler(req1_size, req1, &resp1_size, resp1);
+
+    resp_params.len = resp1_size;
+    resp_params.auth = resp + SE3_RESP1_OFFSET_AUTH;
+    resp_params.iv = resp + SE3_RESP1_OFFSET_IV;
+    resp_params.token = resp + SE3_RESP1_OFFSET_TOKEN;
+    resp_params.status = status;
+    resp_params.data = resp1;
+
+    resp1_size_padded = resp1_size;
+    if (resp1_size_padded % SE3_L1_CRYPTOBLOCK_SIZE != 0) {
+        memset(resp1 + resp1_size_padded, 0, (SE3_L1_CRYPTOBLOCK_SIZE - (resp1_size_padded % SE3_L1_CRYPTOBLOCK_SIZE)));
+        resp1_size_padded += (SE3_L1_CRYPTOBLOCK_SIZE - (resp1_size_padded % SE3_L1_CRYPTOBLOCK_SIZE));
+    }
+
+    *resp_size = SE3_RESP1_OFFSET_DATA + resp1_size_padded;
+
+    // prepare response
+    SE3_SET16(resp, SE3_RESP1_OFFSET_LEN, resp_params.len);
+    SE3_SET16(resp, SE3_RESP1_OFFSET_STATUS, resp_params.status);
+    if (login.y) {
+        memcpy(resp + SE3_RESP1_OFFSET_TOKEN, login.token, SE3_L1_TOKEN_SIZE);
+    }
+    else {
+        memset(resp + SE3_RESP1_OFFSET_TOKEN, 0, SE3_L1_TOKEN_SIZE);
+    }
+	if (req_hdr.cmd_flags & SE3_CMDFLAG_ENCRYPT) {
+		se3_rand(SE3_L1_IV_SIZE, resp_params.iv);
+	}
+	else {
+		memset(resp_params.iv, 0, SE3_L1_IV_SIZE);
+	}
+    se3_payload_encrypt(
+        &(login.cryptoctx), resp_params.auth, resp_params.iv,
+        resp + SE3_L1_AUTH_SIZE + SE3_L1_IV_SIZE, (*resp_size - SE3_L1_AUTH_SIZE - SE3_L1_IV_SIZE) / SE3_L1_CRYPTOBLOCK_SIZE, req_hdr.cmd_flags);
+
+
+
+    return SE3_OK;
+}
 
 
 
@@ -473,7 +585,6 @@ void se3_dispatcher_init()
 {
 	se3_security_core_init();
 
-    memset(&ctx, 0, sizeof(ctx));
     memset(&login, 0, sizeof(login));
 
 
@@ -493,51 +604,6 @@ void se3_dispatcher_init()
 
 
 
-void se3_payload_cryptoinit(se3_payload_cryptoctx* ctx, const uint8_t* key)
-{
-	uint8_t keys[2 * B5_AES_256];
-	PBKDF2HmacSha256(key, B5_AES_256, NULL, 0, 1, keys, 2 * B5_AES_256);
-    B5_Aes256_Init(&(ctx->aesenc), keys, B5_AES_256, B5_AES256_CBC_ENC);
-    B5_Aes256_Init(&(ctx->aesdec), keys, B5_AES_256, B5_AES256_CBC_DEC);
-	memcpy(ctx->hmac_key, keys + B5_AES_256, B5_AES_256);
-	memset(keys, 0, 2 * B5_AES_256);
+void set_req_hdr(se3c0_req_header req_hdr_i){
+	req_hdr = req_hdr_i;
 }
-void se3_payload_encrypt(se3_payload_cryptoctx* ctx, uint8_t* auth, uint8_t* iv, uint8_t* data, uint16_t nblocks, uint16_t flags)
-{
-    if (flags & SE3_CMDFLAG_ENCRYPT) {
-        B5_Aes256_SetIV(&(ctx->aesenc), iv);
-        B5_Aes256_Update(&(ctx->aesenc), data, data, nblocks);
-    }
-
-    if (flags & SE3_CMDFLAG_SIGN) {
-        B5_HmacSha256_Init(&(ctx->hmac), ctx->hmac_key, B5_AES_256);
-        B5_HmacSha256_Update(&(ctx->hmac), iv, B5_AES_IV_SIZE);
-        B5_HmacSha256_Update(&(ctx->hmac), data, nblocks*B5_AES_BLK_SIZE);
-        B5_HmacSha256_Finit(&(ctx->hmac), ctx->auth);
-        memcpy(auth, ctx->auth, 16);
-    }
-    else {
-        memset(auth, 0, 16);
-    }
-}
-
-bool se3_payload_decrypt(se3_payload_cryptoctx* ctx, const uint8_t* auth, const uint8_t* iv, uint8_t* data, uint16_t nblocks, uint16_t flags)
-{
-    if (flags & SE3_CMDFLAG_SIGN) {
-        B5_HmacSha256_Init(&(ctx->hmac), ctx->hmac_key, B5_AES_256);
-        B5_HmacSha256_Update(&(ctx->hmac), iv, B5_AES_IV_SIZE);
-        B5_HmacSha256_Update(&(ctx->hmac), data, nblocks*B5_AES_BLK_SIZE);
-        B5_HmacSha256_Finit(&(ctx->hmac), ctx->auth);
-        if (memcmp(auth, ctx->auth, 16)) {
-            return false;
-        }
-    }
-
-    if (flags & SE3_CMDFLAG_ENCRYPT) {
-        B5_Aes256_SetIV(&(ctx->aesdec), iv);
-        B5_Aes256_Update(&(ctx->aesdec), data, data, nblocks);
-    }
-
-    return true;
-}
-//old but gold

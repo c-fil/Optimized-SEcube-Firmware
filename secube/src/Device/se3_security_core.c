@@ -63,6 +63,13 @@ se3_algo_descriptor L1d_algo_table[SE3_ALGO_MAX] = {
 	{ NULL, NULL, 0, "", 0, 0, 0 }
 };
 
+union {
+    B5_tSha256Ctx sha;
+    B5_tAesCtx aes;
+} ctx;
+
+
+
 static bool se3c1_record_find(uint16_t record_type, se3_flash_it* it)
 {
     uint16_t it_record_type = 0;
@@ -416,5 +423,55 @@ uint16_t L1d_crypto_list(uint16_t req_size, const uint8_t* req, uint16_t* resp_s
 }
 
 void se3_security_core_init(){
+    memset(&ctx, 0, sizeof(ctx));
     memset((void*)&se3c1, 0, sizeof(SE3_L1_GLOBALS));
+}
+
+
+
+void se3_payload_cryptoinit(se3_payload_cryptoctx* ctx, const uint8_t* key)
+{
+	uint8_t keys[2 * B5_AES_256];
+	PBKDF2HmacSha256(key, B5_AES_256, NULL, 0, 1, keys, 2 * B5_AES_256);
+    B5_Aes256_Init(&(ctx->aesenc), keys, B5_AES_256, B5_AES256_CBC_ENC);
+    B5_Aes256_Init(&(ctx->aesdec), keys, B5_AES_256, B5_AES256_CBC_DEC);
+	memcpy(ctx->hmac_key, keys + B5_AES_256, B5_AES_256);
+	memset(keys, 0, 2 * B5_AES_256);
+}
+void se3_payload_encrypt(se3_payload_cryptoctx* ctx, uint8_t* auth, uint8_t* iv, uint8_t* data, uint16_t nblocks, uint16_t flags)
+{
+    if (flags & SE3_CMDFLAG_ENCRYPT) {
+        B5_Aes256_SetIV(&(ctx->aesenc), iv);
+        B5_Aes256_Update(&(ctx->aesenc), data, data, nblocks);
+    }
+
+    if (flags & SE3_CMDFLAG_SIGN) {
+        B5_HmacSha256_Init(&(ctx->hmac), ctx->hmac_key, B5_AES_256);
+        B5_HmacSha256_Update(&(ctx->hmac), iv, B5_AES_IV_SIZE);
+        B5_HmacSha256_Update(&(ctx->hmac), data, nblocks*B5_AES_BLK_SIZE);
+        B5_HmacSha256_Finit(&(ctx->hmac), ctx->auth);
+        memcpy(auth, ctx->auth, 16);
+    }
+    else {
+        memset(auth, 0, 16);
+    }
+}
+bool se3_payload_decrypt(se3_payload_cryptoctx* ctx, const uint8_t* auth, const uint8_t* iv, uint8_t* data, uint16_t nblocks, uint16_t flags)
+{
+    if (flags & SE3_CMDFLAG_SIGN) {
+        B5_HmacSha256_Init(&(ctx->hmac), ctx->hmac_key, B5_AES_256);
+        B5_HmacSha256_Update(&(ctx->hmac), iv, B5_AES_IV_SIZE);
+        B5_HmacSha256_Update(&(ctx->hmac), data, nblocks*B5_AES_BLK_SIZE);
+        B5_HmacSha256_Finit(&(ctx->hmac), ctx->auth);
+        if (memcmp(auth, ctx->auth, 16)) {
+            return false;
+        }
+    }
+
+    if (flags & SE3_CMDFLAG_ENCRYPT) {
+        B5_Aes256_SetIV(&(ctx->aesdec), iv);
+        B5_Aes256_Update(&(ctx->aesdec), data, data, nblocks);
+    }
+
+    return true;
 }

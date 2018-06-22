@@ -25,6 +25,12 @@ enum {
 	SE3_FLASH_TYPE_RECORD = 0xF0  ///< flash node type: record
 };
 
+enum {
+	SE3_RECORD_SIZE_TYPE = 2,  ///< record.type field size
+	SE3_RECORD_OFFSET_TYPE = 0, ///< record.type field offset
+	SE3_RECORD_OFFSET_DATA = 2, ///< record.data field offset
+};
+
 /** \brief Record information */
 typedef struct SE3_RECORD_INFO_ {
     uint16_t read_access;  ///< required access level for read
@@ -61,12 +67,15 @@ typedef struct se3_algo_descriptor_ {
 	uint16_t display_key_size;  ///< key size for the algorithm list API
 } se3_algo_descriptor;
 
+typedef struct se3_payload_cryptoctx_ {
+	B5_tAesCtx aesenc;
+    B5_tAesCtx aesdec;
+	B5_tHmacSha256Ctx hmac;
+	uint8_t hmac_key[B5_AES_256];
+    uint8_t auth[B5_SHA256_DIGEST_SIZE];
+} se3_payload_cryptoctx;
 
-enum {
-	SE3_RECORD_SIZE_TYPE = 2,  ///< record.type field size
-	SE3_RECORD_OFFSET_TYPE = 0, ///< record.type field offset
-	SE3_RECORD_OFFSET_DATA = 2, ///< record.data field offset
-};
+
 
 /** \brief Write record
  *
@@ -115,6 +124,10 @@ uint16_t L1d_crypto_set_time(uint16_t req_size, const uint8_t* req, uint16_t* re
 uint16_t L1d_crypto_list(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
 
 void se3_security_core_init();
+
+void se3_payload_cryptoinit(se3_payload_cryptoctx* ctx, const uint8_t* key);
+void se3_payload_encrypt(se3_payload_cryptoctx* ctx, uint8_t* auth, uint8_t* iv, uint8_t* data, uint16_t nblocks, uint16_t flags);
+bool se3_payload_decrypt(se3_payload_cryptoctx* ctx, const uint8_t* auth, const uint8_t* iv, uint8_t* data, uint16_t nblocks, uint16_t flags);
 
 /** \brief L1 globals */
  SE3_L1_GLOBALS se3c1;
