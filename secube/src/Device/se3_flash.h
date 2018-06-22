@@ -7,7 +7,7 @@
 #pragma once
 //#include "se3c0.h"
 #include <stdbool.h>
-#include "se3_common.h"
+
 
 #ifndef CUBESIM
 #include "stm32f4xx.h"

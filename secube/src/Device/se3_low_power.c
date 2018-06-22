@@ -1,5 +1,5 @@
 
-#include "se3_cmd1_config.h"
+#include "se3_low_power.h"
 
 
 void se3_setup_lp_mode(){

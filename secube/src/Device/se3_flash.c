@@ -1,11 +1,7 @@
-/**
- *  \file se3_flash.c
- *  \author Nicola Ferri
- *  \brief Flash management
- */
+
 
 #include "se3_flash.h"
-
+#include "se3_common.h"
 
 SE3_FLASH_INFO flash;
 
