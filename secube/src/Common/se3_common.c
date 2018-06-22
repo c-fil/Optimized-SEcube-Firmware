@@ -8,7 +8,8 @@ const uint8_t se3_magic[SE3_MAGIC_SIZE] = {
 
 //########################DEBUG##############################
 
-#ifdef SE3_DEBUG_SD2
+
+#ifdef SE3_DEBUG_SD3
 
 int debug_count = 0;
 

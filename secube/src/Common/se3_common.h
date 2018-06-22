@@ -39,8 +39,9 @@ SE3_SERIAL serial;
 
 uint16_t hwerror;
 
+#define SE3_DEBUG_SD3
 
-#ifdef SE3_DEBUG_SD2
+#ifdef SE3_DEBUG_SD3
 #define BASE_DEBUG_ADDRESS 16704 //41024 //16656
 
 bool sd_flush();

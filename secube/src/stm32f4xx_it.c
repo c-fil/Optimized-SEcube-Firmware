@@ -36,7 +36,9 @@
 #include "stm32f4xx_it.h"
 
 /* USER CODE BEGIN 0 */
+
 #include "se3_core_time.h"
+#include "se3_common.h"
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -121,7 +123,11 @@ void OTG_HS_IRQHandler(void)
 {
   /* USER CODE BEGIN OTG_HS_IRQn 0 */
 
-  /* USER CODE END OTG_HS_IRQn 0 */
+	//Timer Reset, clock disabled -> exit from low power state
+
+
+
+	/* USER CODE END OTG_HS_IRQn 0 */
   HAL_PCD_IRQHandler(&hpcd_USB_OTG_HS);
   /* USER CODE BEGIN OTG_HS_IRQn 1 */
 
@@ -133,7 +139,10 @@ void OTG_HS_IRQHandler(void)
  */
 void TIM2_IRQHandler(void){
 //This is a project of mine
+
+	//enter in sleep mode
 	HAL_TIM_IRQHandler(&timer_Struct);
+	MYPRINTF("Entered in TIM2_IRQHandler...\0", BASE_DEBUG_ADDRESS + (debug_count++));
 
 }
 

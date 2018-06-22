@@ -7,7 +7,7 @@
 #include "se3_core.h"
 #include "se3_communication_core.h"
 #include "se3_dispatcher_core.h"
-//#include "crc16.h"
+#include "crc16.h"
 #include "se3_rand.h"
 
 
@@ -24,6 +24,9 @@ void device_init()
 	se3_time_init();
 	se3_flash_init();
     se3_dispatcher_init();
+    sd_flush();
+	MYPRINTF("[se3_core] We are in device_loop, setting the low power counter...\0", BASE_DEBUG_ADDRESS + (debug_count++));
+	count_up_to(300);
 }
 
 void device_loop()
