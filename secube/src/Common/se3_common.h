@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "se3c0def.h"
+//#include "se3c0def.h"
 #include "se3c1def.h"
 
 extern const uint8_t se3_magic[SE3_MAGIC_SIZE];

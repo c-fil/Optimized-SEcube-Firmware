@@ -8,7 +8,7 @@
 #include "se3_communication_core.h"
 #include "se3_dispatcher_core.h"
 
-#include "crc16.h"
+//#include "crc16.h"
 #include "se3_rand.h"
 
 

@@ -7,6 +7,7 @@
 #pragma once
 #include "se3c1def.h"
 #include "se3_flash.h"
+#include "pbkdf2.h"
 #define SE3_TYPE_KEY 100
 /** \brief Flash key structure
  *  

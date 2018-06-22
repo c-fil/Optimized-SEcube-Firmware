@@ -1,8 +1,9 @@
 #include "se3_security_core.h"
-#include <se3c0def.h>
-#include <stdbool.h>
+//#include <se3c0def.h>
+//#include <stdbool.h>
 #include "se3_keys.h"
 #include "se3_common.h"
+#include "se3_rand.h"
 // ---- L1 structures ----
 
 #define SE3_CMD1_MAX 	16
