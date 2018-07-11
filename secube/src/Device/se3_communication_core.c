@@ -32,7 +32,7 @@ typedef struct s3_storage_range_ {
 
 
 
-
+/**\brief Initializes the communication core structures */
 void se3_communication_core_init()
 {
 	memset(&comm, 0, sizeof(SE3_COMM_STATUS));

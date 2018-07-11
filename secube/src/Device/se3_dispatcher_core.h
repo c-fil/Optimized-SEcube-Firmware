@@ -4,18 +4,10 @@
 #include "se3_keys.h"
 #include "se3_common.h"
 #include "se3_rand.h"
-// ---- L1 structures ----
+#include "se3_sekey.h"
 
 #define SE3_CMD1_MAX 	16
 #define SE3_N_HARDWARE 	3
-
-enum {
-	SE3_SECURITY_CORE,
-	SE3_FPGA,
-	SE3_SMARTCARD
-}se3_algo_impl_t;
-
-
 
 /** \brief L1 login status data */
 typedef struct SE3_LOGIN_STATUS_ {

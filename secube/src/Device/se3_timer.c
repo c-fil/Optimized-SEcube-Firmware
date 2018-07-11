@@ -5,13 +5,13 @@
 TIM_HandleTypeDef timer_Struct;
 
 void count_up_to(int n){
-	MYPRINTF("We are in 'count up to' function...\0", BASE_DEBUG_ADDRESS + (debug_count++));
+	//MYPRINTF("We are in 'count up to' function...\0", BASE_DEBUG_ADDRESS + (debug_count++));
 
 	TIM_Base_InitTypeDef    TIM_TimeBaseStructure;
 	TIM_ClockConfigTypeDef clock_source;
 
 	  TIM_TimeBaseStructure.Period = 0x7F;
-	  TIM_TimeBaseStructure.Prescaler = 0x0FFF;
+	  TIM_TimeBaseStructure.Prescaler = 0x0FF;
 	  TIM_TimeBaseStructure.ClockDivision = 0x0;
 	  TIM_TimeBaseStructure.CounterMode = TIM_COUNTERMODE_UP;
 
@@ -32,4 +32,5 @@ void count_up_to(int n){
 
 	  /* Enable interrupt and peripheral */
 	  HAL_TIM_Base_Start_IT(&timer_Struct);
+	  return;
 }

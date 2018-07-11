@@ -139,11 +139,12 @@ void OTG_HS_IRQHandler(void)
  */
 void TIM2_IRQHandler(void){
 //This is a project of mine
-
+	char debug_buffer2 [20];
 	//enter in sleep mode
 	HAL_TIM_IRQHandler(&timer_Struct);
-	MYPRINTF("Entered in TIM2_IRQHandler...\0", BASE_DEBUG_ADDRESS + (debug_count++));
-
+	//MYPRINTF("Entered in TIM2_IRQHandler...\0", (uint32_t)( BASE_DEBUG_ADDRESS + (debug_count++)));
+	sprintf(debug_buffer2,"Num: %d", (uint32_t)se3c0_time_get());
+	MYPRINTF(debug_buffer2,(uint32_t)( BASE_DEBUG_ADDRESS + (debug_count++)));
 }
 
 /* USER CODE BEGIN 1 */

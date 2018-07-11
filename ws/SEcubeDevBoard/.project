@@ -571,24 +571,24 @@
 			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_timer.h</locationURI>
 		</link>
 		<link>
-			<name>Application/src/Device/se3_cmd1_keys.c</name>
+			<name>Application/src/Device/se3_FPGA.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_cmd1_keys.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_FPGA.c</locationURI>
 		</link>
 		<link>
-			<name>Application/src/Device/se3_cmd1_keys.h</name>
+			<name>Application/src/Device/se3_FPGA.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_cmd1_keys.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_FPGA.h</locationURI>
 		</link>
 		<link>
-			<name>Application/src/Device/se3_cmd1_login.c</name>
+			<name>Application/src/Device/se3_smartcard.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_cmd1_login.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_smartcard.c</locationURI>
 		</link>
 		<link>
-			<name>Application/src/Device/se3_cmd1_login.h</name>
+			<name>Application/src/Device/se3_smartcard.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_cmd1_login.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_smartcard.h</locationURI>
 		</link>
 		<link>
 			<name>Application/src/Device/se3_communication_core.c</name>

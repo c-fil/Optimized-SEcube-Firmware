@@ -1,8 +1,7 @@
 #include "se3_dispatcher_core.h"
 
-
+uint8_t algo_implementation;
 se3c0_req_header req_hdr;
-//IF(struttura.implementation == SE3_FPGA)
 
 uint16_t error(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp)
 {
@@ -56,7 +55,7 @@ uint16_t config(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint
 
     if (req_params.op == SE3_CONFIG_OP_GET) {
         // check access
-        if (login_struct.access < se3c1.records[req_params.type].read_access) {
+        if (login_struct.access < se3_security_info.records[req_params.type].read_access) {
             SE3_TRACE(("[config] insufficient access\n"));
             return SE3_ERR_ACCESS;
         }
@@ -67,7 +66,7 @@ uint16_t config(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint
     }
     else if (req_params.op == SE3_CONFIG_OP_SET) {
         // check access
-        if (login_struct.access < se3c1.records[req_params.type].write_access) {
+        if (login_struct.access < se3_security_info.records[req_params.type].write_access) {
             SE3_TRACE(("[config] insufficient access\n"));
             return SE3_ERR_ACCESS;
         }
@@ -504,11 +503,16 @@ uint16_t dispatcher_call(uint16_t req_size, const uint8_t* req, uint16_t* resp_s
     SE3_GET16(req, SE3_REQ1_OFFSET_LEN, req_params.len);
     SE3_GET16(req, SE3_REQ1_OFFSET_CMD, req_params.cmd);
     if (req_params.cmd < SE3_CMD1_MAX) {
-    	if (req_params.cmd > 6 && req_params.cmd < 11 && !login_struct.y) {   //
-    		SE3_TRACE(("[crypto_init] not logged in\n"));		   //  TODO: ADDED BY US
-    		return SE3_ERR_ACCESS;                                     //
-    	}															   //
-        handler = handlers[SE3_SECURITY_CORE][req_params.cmd];
+    	if (req_params.cmd > 6 && req_params.cmd < 11 && !login_struct.y) {   	//
+    		SE3_TRACE(("[crypto_init] not logged in\n"));		   				//  TODO: ADDED BY US
+    		return SE3_ERR_ACCESS;                                     			//
+    	}
+
+
+    	if(sekey_get_implementation(&algo_implementation, req_params.cmd))
+    		handler = handlers[algo_implementation][req_params.cmd];
+    	else
+    		return SE3_ERR_ACCESS;
     }
     if (handler == NULL) {
         handler = error;
@@ -566,7 +570,7 @@ uint16_t dispatcher_call(uint16_t req_size, const uint8_t* req, uint16_t* resp_s
 void login_cleanup()
 {
     size_t i;
-    se3_mem_reset(&(se3c1.sessions));
+    se3_mem_reset(&(se3_security_info.sessions));
     login_struct.y = false;
     login_struct.access = 0;
     login_struct.challenge_access = SE3_ACCESS_MAX;
@@ -575,7 +579,7 @@ void login_cleanup()
     memcpy(login_struct.key, se3_magic, SE3_L1_KEY_SIZE);
     memset(login_struct.token, 0, SE3_L1_TOKEN_SIZE);
     for (i = 0; i < SE3_SESSIONS_MAX; i++) {
-        se3c1.sessions_algo[i] = SE3_ALGO_INVALID;
+        se3_security_info.sessions_algo[i] = SE3_ALGO_INVALID;
     }
 
 }
@@ -588,14 +592,14 @@ void se3_dispatcher_init()
     memset(&login_struct, 0, sizeof(login_struct));
 
 
-    se3c1.records[SE3_RECORD_TYPE_USERPIN].read_access = SE3_ACCESS_MAX;
-    se3c1.records[SE3_RECORD_TYPE_USERPIN].write_access = SE3_ACCESS_ADMIN;
+    se3_security_info.records[SE3_RECORD_TYPE_USERPIN].read_access = SE3_ACCESS_MAX;
+    se3_security_info.records[SE3_RECORD_TYPE_USERPIN].write_access = SE3_ACCESS_ADMIN;
 
-    se3c1.records[SE3_RECORD_TYPE_ADMINPIN].read_access = SE3_ACCESS_MAX;
-    se3c1.records[SE3_RECORD_TYPE_ADMINPIN].write_access = SE3_ACCESS_ADMIN;
+    se3_security_info.records[SE3_RECORD_TYPE_ADMINPIN].read_access = SE3_ACCESS_MAX;
+    se3_security_info.records[SE3_RECORD_TYPE_ADMINPIN].write_access = SE3_ACCESS_ADMIN;
 
     se3_mem_init(
-        &(se3c1.sessions),
+        &(se3_security_info.sessions),
         SE3_SESSIONS_MAX, se3_sessions_index,
         SE3_SESSIONS_BUF, se3_sessions_buf);
 

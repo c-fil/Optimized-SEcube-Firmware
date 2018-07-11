@@ -1,9 +1,3 @@
-/**
- *  \file se3c1.h
- *  \author Nicola Ferri
- *  \brief L1 structures and functions
- */
-
 #pragma once
 
 #include "se3_core_time.h"
@@ -38,11 +32,11 @@ typedef struct SE3_RECORD_INFO_ {
 } SE3_RECORD_INFO;
 
 
-typedef struct SE3_L1_GLOBALS_ {
+typedef struct SE3_SECURITY_INFO_ {
     SE3_RECORD_INFO records[SE3_RECORD_MAX];
     se3_mem sessions;
     uint16_t sessions_algo[SE3_SESSIONS_MAX];
-} SE3_L1_GLOBALS;
+} SE3_SECURITY_INFO;
 
 
 /** \brief L1_crypto_init function type */
@@ -130,7 +124,7 @@ void se3_payload_encrypt(se3_payload_cryptoctx* ctx, uint8_t* auth, uint8_t* iv,
 bool se3_payload_decrypt(se3_payload_cryptoctx* ctx, const uint8_t* auth, const uint8_t* iv, uint8_t* data, uint16_t nblocks, uint16_t flags);
 
 /** \brief L1 globals */
- SE3_L1_GLOBALS se3c1;
+ SE3_SECURITY_INFO se3_security_info;
 
 
 /** session buffer */

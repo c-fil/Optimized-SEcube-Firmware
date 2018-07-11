@@ -16,7 +16,6 @@
 
 uint8_t se3_sessions_buf[SE3_SESSIONS_BUF];
 uint8_t* se3_sessions_index[SE3_SESSIONS_MAX];
-//SE3_L1_GLOBALS se3c1;
 
 void device_init()
 {
@@ -25,7 +24,7 @@ void device_init()
 	se3_flash_init();
     se3_dispatcher_init();
     sd_flush();
-	MYPRINTF("[se3_core] We are in device_loop, setting the low power counter...\0", BASE_DEBUG_ADDRESS + (debug_count++));
+	//MYPRINTF("[se3_core_mio] We are in device_loop, setting the low power counter...\0", BASE_DEBUG_ADDRESS + (debug_count++));
 	count_up_to(300);
 }
 

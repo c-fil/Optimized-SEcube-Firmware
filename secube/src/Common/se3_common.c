@@ -1,5 +1,5 @@
 #include "se3_common.h"
-
+#include "se3_sdio.h"
 
 const uint8_t se3_magic[SE3_MAGIC_SIZE] = {
     0x3c, 0xab, 0x78, 0xb6, 0x2, 0x64, 0x47, 0xe9, 0x30, 0x26, 0xd4, 0x1f, 0xad, 0x68, 0x22, 0x27,
@@ -8,10 +8,11 @@ const uint8_t se3_magic[SE3_MAGIC_SIZE] = {
 
 //########################DEBUG##############################
 
+#define SE3_DEBUG_SD3
 
 #ifdef SE3_DEBUG_SD3
 
-int debug_count = 0;
+//int debug_count = 0;
 
 int buff_len(uint8_t* buff){
 	int n = 0;
@@ -35,6 +36,7 @@ bool MYPRINTF( uint8_t* buf, uint32_t blk_addr){
 }
 
 bool sd_flush(){
+	debug_count = 0;
 	int i;
 	int *buf;
 	buf = calloc(512,sizeof(int));
