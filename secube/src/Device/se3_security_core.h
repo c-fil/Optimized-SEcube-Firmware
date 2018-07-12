@@ -13,6 +13,13 @@ enum {
 	SE3_SESSIONS_MAX = 100  ///< maximum number of sessions
 };
 
+enum {
+	SE3_AES256,
+	SE3_CRC16,
+	SE3_PBKDF2,
+	SE3_SHA256
+}se3_crypto_algorithm;
+
 // ---- records ----
 
 enum {
@@ -120,8 +127,8 @@ uint16_t crypto_list(uint16_t req_size, const uint8_t* req, uint16_t* resp_size,
 void se3_security_core_init();
 
 void se3_payload_cryptoinit(se3_payload_cryptoctx* ctx, const uint8_t* key);
-void se3_payload_encrypt(se3_payload_cryptoctx* ctx, uint8_t* auth, uint8_t* iv, uint8_t* data, uint16_t nblocks, uint16_t flags);
-bool se3_payload_decrypt(se3_payload_cryptoctx* ctx, const uint8_t* auth, const uint8_t* iv, uint8_t* data, uint16_t nblocks, uint16_t flags);
+bool se3_payload_encrypt(se3_payload_cryptoctx* ctx, uint8_t* auth, uint8_t* iv, uint8_t* data, uint16_t nblocks, uint16_t flags, uint8_t crypto_algo);
+bool se3_payload_decrypt(se3_payload_cryptoctx* ctx, const uint8_t* auth, const uint8_t* iv, uint8_t* data, uint16_t nblocks, uint16_t flags, uint8_t crypto_algo);
 
 /** \brief L1 globals */
  SE3_SECURITY_INFO se3_security_info;

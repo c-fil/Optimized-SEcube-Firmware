@@ -71,7 +71,6 @@ uint16_t dispatcher_call(uint16_t req_size, const uint8_t* req, uint16_t* resp_s
  *
  *  Cleans all data associated with the login session, making SEcube ready for a new login.
  */
-void login_cleanup();
 
 /** \brief Initialize L1 structures */
 void se3_dispatcher_init();

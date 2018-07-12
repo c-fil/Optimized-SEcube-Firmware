@@ -431,13 +431,28 @@ void se3_payload_cryptoinit(se3_payload_cryptoctx* ctx, const uint8_t* key)
 	memcpy(ctx->hmac_key, keys + B5_AES_256, B5_AES_256);
 	memset(keys, 0, 2 * B5_AES_256);
 }
-void se3_payload_encrypt(se3_payload_cryptoctx* ctx, uint8_t* auth, uint8_t* iv, uint8_t* data, uint16_t nblocks, uint16_t flags)
+bool se3_payload_encrypt(se3_payload_cryptoctx* ctx, uint8_t* auth, uint8_t* iv, uint8_t* data, uint16_t nblocks, uint16_t flags, uint8_t crypto_algo)
 {
-    if (flags & SE3_CMDFLAG_ENCRYPT) {
-        B5_Aes256_SetIV(&(ctx->aesenc), iv);
-        B5_Aes256_Update(&(ctx->aesenc), data, data, nblocks);
-    }
+	switch(crypto_algo){
+		case SE3_AES256:
+		    if (flags & SE3_CMDFLAG_ENCRYPT) {
+		        B5_Aes256_SetIV(&(ctx->aesenc), iv);
+		        B5_Aes256_Update(&(ctx->aesenc), data, data, nblocks);
+		    } break;
 
+		case SE3_CRC16:
+			//to be implemented
+
+		case SE3_PBKDF2:
+			//to be implemented
+
+		case SE3_SHA256:
+			//to be implemented
+
+		default: return false; break;
+	}
+
+//TODO: To be surrounded with switch case
     if (flags & SE3_CMDFLAG_SIGN) {
         B5_HmacSha256_Init(&(ctx->hmac), ctx->hmac_key, B5_AES_256);
         B5_HmacSha256_Update(&(ctx->hmac), iv, B5_AES_IV_SIZE);
@@ -448,9 +463,11 @@ void se3_payload_encrypt(se3_payload_cryptoctx* ctx, uint8_t* auth, uint8_t* iv,
     else {
         memset(auth, 0, 16);
     }
+    return true;
 }
-bool se3_payload_decrypt(se3_payload_cryptoctx* ctx, const uint8_t* auth, const uint8_t* iv, uint8_t* data, uint16_t nblocks, uint16_t flags)
+bool se3_payload_decrypt(se3_payload_cryptoctx* ctx, const uint8_t* auth, const uint8_t* iv, uint8_t* data, uint16_t nblocks, uint16_t flags, uint8_t crypto_algo)
 {
+	//TODO: To be surrounded with switch case
     if (flags & SE3_CMDFLAG_SIGN) {
         B5_HmacSha256_Init(&(ctx->hmac), ctx->hmac_key, B5_AES_256);
         B5_HmacSha256_Update(&(ctx->hmac), iv, B5_AES_IV_SIZE);
@@ -461,10 +478,25 @@ bool se3_payload_decrypt(se3_payload_cryptoctx* ctx, const uint8_t* auth, const 
         }
     }
 
-    if (flags & SE3_CMDFLAG_ENCRYPT) {
-        B5_Aes256_SetIV(&(ctx->aesdec), iv);
-        B5_Aes256_Update(&(ctx->aesdec), data, data, nblocks);
-    }
+	switch(crypto_algo){
+		case SE3_AES256:
+		    if (flags & SE3_CMDFLAG_ENCRYPT) {
+		        B5_Aes256_SetIV(&(ctx->aesdec), iv);
+		        B5_Aes256_Update(&(ctx->aesdec), data, data, nblocks);
+		    } break;
+
+		case SE3_CRC16:
+			//to be implemented
+
+		case SE3_PBKDF2:
+			//to be implemented
+
+		case SE3_SHA256:
+			//to be implemented
+
+		default: return false; break;
+	}
+
 
     return true;
 }

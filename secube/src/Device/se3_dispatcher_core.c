@@ -1,7 +1,11 @@
 #include "se3_dispatcher_core.h"
 
 uint8_t algo_implementation;
+uint8_t crypto_algo;
+
 se3_comm_req_header req_hdr;
+
+static void login_cleanup();
 
 uint16_t error(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp)
 {
@@ -478,6 +482,10 @@ uint16_t dispatcher_call(uint16_t req_size, const uint8_t* req, uint16_t* resp_s
         return SE3_ERR_COMM;
     }
 
+    //check for authorization
+    if(!sekey_get_auth(login_struct.key)){
+    	return SE3_ERR_ACCESS;
+    }
     // prepare request
     if (!login_struct.cryptoctx_initialized) {
         se3_payload_cryptoinit(&(login_struct.cryptoctx), login_struct.key);
@@ -486,7 +494,7 @@ uint16_t dispatcher_call(uint16_t req_size, const uint8_t* req, uint16_t* resp_s
     if (!se3_payload_decrypt(
         &(login_struct.cryptoctx), req_params.auth, req_params.iv,
         /* !! modifying request */ (uint8_t*)(req  + SE3_L1_AUTH_SIZE + SE3_L1_IV_SIZE),
-        (req_size - SE3_L1_AUTH_SIZE - SE3_L1_IV_SIZE) / SE3_L1_CRYPTOBLOCK_SIZE, req_hdr.cmd_flags))
+        (req_size - SE3_L1_AUTH_SIZE - SE3_L1_IV_SIZE) / SE3_L1_CRYPTOBLOCK_SIZE, req_hdr.cmd_flags, crypto_algo))
     {
         SE3_TRACE(("[dispatcher_call] AUTH failed\n"));
         return SE3_ERR_COMM;
@@ -504,16 +512,17 @@ uint16_t dispatcher_call(uint16_t req_size, const uint8_t* req, uint16_t* resp_s
     SE3_GET16(req, SE3_REQ1_OFFSET_CMD, req_params.cmd);
     if (req_params.cmd < SE3_CMD1_MAX) {
     	if (req_params.cmd > 6 && req_params.cmd < 11 && !login_struct.y) {   	//
-    		SE3_TRACE(("[crypto_init] not logged in\n"));		   				//  TODO: ADDED BY US
+    		SE3_TRACE(("[crypto_init] not logged in\n"));		   				//
     		return SE3_ERR_ACCESS;                                     			//
-    	}
-
-
-    	if(sekey_get_implementation(&algo_implementation, req_params.cmd))
-    		handler = handlers[algo_implementation][req_params.cmd];
-    	else
-    		return SE3_ERR_ACCESS;
-    }
+    	}																		//
+    																			//
+    																			//  TODO: ADDED BY US
+    	if(sekey_get_implementation_info(&algo_implementation, 						//
+    			&crypto_algo, login_struct.key))								//
+    		handler = handlers[algo_implementation][req_params.cmd];			//
+    	else																	//
+    		return SE3_ERR_ACCESS;												//
+    }																			//
     if (handler == NULL) {
         handler = error;
     }
@@ -555,33 +564,22 @@ uint16_t dispatcher_call(uint16_t req_size, const uint8_t* req, uint16_t* resp_s
 	else {
 		memset(resp_params.iv, 0, SE3_L1_IV_SIZE);
 	}
-    se3_payload_encrypt(
-        &(login_struct.cryptoctx), resp_params.auth, resp_params.iv,
-        resp + SE3_L1_AUTH_SIZE + SE3_L1_IV_SIZE, (*resp_size - SE3_L1_AUTH_SIZE - SE3_L1_IV_SIZE) / SE3_L1_CRYPTOBLOCK_SIZE, req_hdr.cmd_flags);
 
+	//TODO: added by us
+	switch(algo_implementation){
+	case SE3_SECURITY_CORE: se3_payload_encrypt(
+						&(login_struct.cryptoctx), resp_params.auth, resp_params.iv,
+						resp + SE3_L1_AUTH_SIZE + SE3_L1_IV_SIZE, (*resp_size - SE3_L1_AUTH_SIZE - SE3_L1_IV_SIZE) / SE3_L1_CRYPTOBLOCK_SIZE, req_hdr.cmd_flags, crypto_algo);
+						break;
 
+	case SE3_SMARTCARD: //to be implemented
+
+	case SE3_FPGA: //to be implemented
+
+	default: return SE3_ERR_RESOURCE; break;
+	}
 
     return SE3_OK;
-}
-
-
-
-
-void login_cleanup()
-{
-    size_t i;
-    se3_mem_reset(&(se3_security_info.sessions));
-    login_struct.y = false;
-    login_struct.access = 0;
-    login_struct.challenge_access = SE3_ACCESS_MAX;
-    login_struct.cryptoctx_initialized = false;
-    //memset(login.key, 0, SE3_L1_KEY_SIZE);
-    memcpy(login_struct.key, se3_magic, SE3_L1_KEY_SIZE);
-    memset(login_struct.token, 0, SE3_L1_TOKEN_SIZE);
-    for (i = 0; i < SE3_SESSIONS_MAX; i++) {
-        se3_security_info.sessions_algo[i] = SE3_ALGO_INVALID;
-    }
-
 }
 
 
@@ -610,4 +608,22 @@ void se3_dispatcher_init()
 
 void set_req_hdr(se3_comm_req_header req_hdr_i){
 	req_hdr = req_hdr_i;
+}
+
+
+static void login_cleanup()
+{
+    size_t i;
+    se3_mem_reset(&(se3_security_info.sessions));
+    login_struct.y = false;
+    login_struct.access = 0;
+    login_struct.challenge_access = SE3_ACCESS_MAX;
+    login_struct.cryptoctx_initialized = false;
+    //memset(login.key, 0, SE3_L1_KEY_SIZE);
+    memcpy(login_struct.key, se3_magic, SE3_L1_KEY_SIZE);
+    memset(login_struct.token, 0, SE3_L1_TOKEN_SIZE);
+    for (i = 0; i < SE3_SESSIONS_MAX; i++) {
+        se3_security_info.sessions_algo[i] = SE3_ALGO_INVALID;
+    }
+
 }
