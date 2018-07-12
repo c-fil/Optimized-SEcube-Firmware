@@ -24,7 +24,7 @@ typedef struct SE3_SERIAL_ {
 #endif
 
 /** \brief decoded request header */
-typedef struct se3c0_req_header_ {
+typedef struct se3_comm_req_header_ {
     uint16_t cmd;
     uint16_t cmd_flags;
     uint16_t len;
@@ -32,7 +32,7 @@ typedef struct se3c0_req_header_ {
     uint16_t crc;
 #endif
     uint32_t cmdtok[SE3_COMM_N - 1];
-} se3c0_req_header;
+} se3_comm_req_header;
 
 
 SE3_SERIAL serial;

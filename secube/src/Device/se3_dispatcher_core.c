@@ -1,7 +1,7 @@
 #include "se3_dispatcher_core.h"
 
 uint8_t algo_implementation;
-se3c0_req_header req_hdr;
+se3_comm_req_header req_hdr;
 
 uint16_t error(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp)
 {
@@ -608,6 +608,6 @@ void se3_dispatcher_init()
 
 
 
-void set_req_hdr(se3c0_req_header req_hdr_i){
+void set_req_hdr(se3_comm_req_header req_hdr_i){
 	req_hdr = req_hdr_i;
 }

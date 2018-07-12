@@ -76,7 +76,7 @@ void login_cleanup();
 /** \brief Initialize L1 structures */
 void se3_dispatcher_init();
 
-void set_req_hdr(se3c0_req_header req_hdr_i);
+void set_req_hdr(se3_comm_req_header req_hdr_i);
 
 static se3_cmd_func handlers[SE3_N_HARDWARE][SE3_CMD1_MAX] = {{
 //Security Core

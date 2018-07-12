@@ -1,9 +1,3 @@
-/**
- *  \file se3_proto.h
- *  \author Nicola Ferri
- *  \brief USB read/write handlers
- */
-
 #pragma once
 
 #include "se3_common.h"
@@ -37,7 +31,7 @@ typedef struct SE3_COMM_STATUS_ {
 
 
 /** \brief response header to be encoded */
-typedef struct se3c0_resp_header_ {
+typedef struct se3_comm_resp_header_ {
     uint16_t ready;
     uint16_t status;
     uint16_t len;
@@ -45,7 +39,7 @@ typedef struct se3c0_resp_header_ {
     uint16_t crc;
 #endif
     uint32_t cmdtok[SE3_COMM_N - 1];
-} se3c0_resp_header;
+} se3_comm_resp_header;
 
 /** USB data handlers return values */
 enum {
@@ -55,8 +49,8 @@ enum {
 };
 
 SE3_COMM_STATUS comm;
-se3c0_req_header req_hdr;
-se3c0_resp_header resp_hdr;
+se3_comm_req_header req_hdr;
+se3_comm_resp_header resp_hdr;
 const uint8_t se3_hello[SE3_HELLO_SIZE];
 
 

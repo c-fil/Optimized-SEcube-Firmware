@@ -36,8 +36,8 @@ typedef struct s3_storage_range_ {
 void se3_communication_core_init()
 {
 	memset(&comm, 0, sizeof(SE3_COMM_STATUS));
-	memset(&req_hdr, 0, sizeof(se3c0_req_header));
-	memset(&resp_hdr, 0, sizeof(se3c0_resp_header));
+	memset(&req_hdr, 0, sizeof(se3_comm_req_header));
+	memset(&resp_hdr, 0, sizeof(se3_comm_resp_header));
 	memset(&serial, 0, sizeof(SE3_SERIAL));
 
 
@@ -213,6 +213,13 @@ static void handle_req_recv(int index, const uint8_t* blockdata)
     }
 }
 
+
+
+/**	User-written USB interface that implements the write operation of the
+  *	driver; it forwards the data on the SD card if the data block does not
+  *	 contain the magic sequence, otherwise the data block is unpacked for further
+  *	 elaborations;
+  */
 int32_t se3_proto_recv(uint8_t lun, const uint8_t* buf, uint32_t blk_addr, uint16_t blk_len)
 {
 	int32_t r = SE3_PROTO_OK;
@@ -357,7 +364,10 @@ static void handle_resp_send(int index, uint8_t* blockdata)
 
 
 
-
+/*	User-written USB interface that implements the read operation of the
+ * 	driver; it sends the data on the SD card if the data block does not
+ *	contain the magic sequence, otherwise it handles the proto request.
+ */
 int32_t se3_proto_send(uint8_t lun, uint8_t* buf, uint32_t blk_addr, uint16_t blk_len)
 {
 	int32_t r = SE3_PROTO_OK;
