@@ -1,4 +1,4 @@
-/**
+0/**
  *  \file se3_common.h
  *  \brief This file contains defines and functions common for L0 and L1
  * 
@@ -44,14 +44,14 @@ uint16_t hwerror;
 #ifdef SE3_DEBUG_SD3
 #define BASE_DEBUG_ADDRESS 16704 //41024 //16656
 
-bool sd_flush();
+bool sd_flush(uint32_t start_address);
 int debug_count;
 
 int buff_len(uint8_t* buff);
 
 
 
-bool MYPRINTF( uint8_t* buf, uint32_t blk_addr);
+bool MYPRINTF( char* buf, uint32_t blk_addr, int n);
 
 #endif
 //##############################################################
@@ -109,7 +109,7 @@ enum {
 	SE3_PAYL_CRYPTO_SIGN = 3
 };*/
 
-
+bool se3_create_log_file();
 
 
 
