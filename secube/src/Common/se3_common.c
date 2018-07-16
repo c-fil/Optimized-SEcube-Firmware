@@ -13,13 +13,10 @@ const uint8_t se3_magic[SE3_MAGIC_SIZE] = {
 };
 
 //########################DEBUG##############################
-
-#define SE3_DEBUG_SD4
-
 #ifdef SE3_DEBUG_SD4
 
 
-#define DATA_BASE_ADDRESS 41024
+
 #define HEADER_BASE_ADDRESS 40960
 #define BLOCK_0_BASE_ADDRESS 8193
 #define BLOCK_1_BASE_ADDRESS 10612
@@ -29,37 +26,30 @@ const uint8_t se3_magic[SE3_MAGIC_SIZE] = {
 #define UNKNOWN2_BASE_ADDRESS 41008
 
 
-//int debug_count = 0;
+int debug_address = DATA_BASE_ADDRESS;
 
-int buff_len(uint8_t* buff){
-	int n = 0;
-	while(buff[n++]!='\0');
-	return n;
-}
-
-bool MYPRINTF( char* buf, uint32_t blk_addr, int n){
-	bool ret;
+bool se3_write_trace( char* buf, uint32_t blk_addr){
 
 	char* tmp;
 	tmp = (char*) calloc(512, sizeof(char));
 	strcpy(tmp,buf);
 
-	int i;
+	if(!secube_sdio_write(512, buf, blk_addr, 1))
+		return false;
 
-	for(i=n;i<512;i++)
-		buf[i]=0;
-
-	ret = secube_sdio_write(512, buf, blk_addr, 1);
-
-	return ret;
+	return true;
 }
 
-bool sd_flush(uint32_t start_address){
+bool se3_debug_sd_flush(uint32_t start_address, uint32_t end_address){
+
 	int i;
 	int *buf;
 	buf = calloc(512,sizeof(int));
 
-	for(i = start_address ; i < (start_address + 200); i++)
+	if(start_address > end_address)
+		return false;
+
+	for(i = start_address ; i < end_address; i++)
 		if(!(secube_sdio_write(512, buf, i, 1)))
 			return false;
 	return true;
@@ -825,67 +815,73 @@ bool se3_create_log_file(){
 
 
 
-	if(!MYPRINTF(b0,BLOCK_0_BASE_ADDRESS,512))
+	if(!se3_write_trace(b0,BLOCK_0_BASE_ADDRESS))
 		return false;
 
-	if(!MYPRINTF(b1_1,BLOCK_1_BASE_ADDRESS,512))
+	if(!se3_write_trace(b1_1,BLOCK_1_BASE_ADDRESS))
 		return false;
-	if(!MYPRINTF(b1_2,BLOCK_1_BASE_ADDRESS + 1,512))
+	if(!se3_write_trace(b1_2,BLOCK_1_BASE_ADDRESS + 1))
 		return false;
-	if(!MYPRINTF(b1_3,BLOCK_1_BASE_ADDRESS + 2,512))
+	if(!se3_write_trace(b1_3,BLOCK_1_BASE_ADDRESS + 2))
 		return false;
-	if(!MYPRINTF(b1_4,BLOCK_1_BASE_ADDRESS + 3,512))
+	if(!se3_write_trace(b1_4,BLOCK_1_BASE_ADDRESS + 3))
 		return false;
-	if(!MYPRINTF(b1_5,BLOCK_1_BASE_ADDRESS + 4,512))
+	if(!se3_write_trace(b1_5,BLOCK_1_BASE_ADDRESS + 4))
 		return false;
-	if(!MYPRINTF(b1_6,BLOCK_1_BASE_ADDRESS + 5,512))
+	if(!se3_write_trace(b1_6,BLOCK_1_BASE_ADDRESS + 5))
 		return false;
-	if(!MYPRINTF(b1_7,BLOCK_1_BASE_ADDRESS + 6,512))
+	if(!se3_write_trace(b1_7,BLOCK_1_BASE_ADDRESS + 6))
 		return false;
-	if(!MYPRINTF(b1_8,BLOCK_1_BASE_ADDRESS + 7,512))
-		return false;
-
-
-	if(!MYPRINTF(b2_1,BLOCK_2_BASE_ADDRESS,512))
-		return false;
-	if(!MYPRINTF(b2_2,BLOCK_2_BASE_ADDRESS + 1,512))
-		return false;
-	if(!MYPRINTF(b2_3,BLOCK_2_BASE_ADDRESS + 2,512))
-		return false;
-	if(!MYPRINTF(b2_4,BLOCK_2_BASE_ADDRESS + 3,512))
-		return false;
-	if(!MYPRINTF(b2_5,BLOCK_2_BASE_ADDRESS + 4,512))
-		return false;
-	if(!MYPRINTF(b2_6,BLOCK_2_BASE_ADDRESS + 5,512))
-		return false;
-	if(!MYPRINTF(b2_7,BLOCK_2_BASE_ADDRESS + 6,512))
-		return false;
-	if(!MYPRINTF(b2_8,BLOCK_2_BASE_ADDRESS + 7,512))
+	if(!se3_write_trace(b1_8,BLOCK_1_BASE_ADDRESS + 7))
 		return false;
 
 
-	if(!MYPRINTF(header,HEADER_BASE_ADDRESS,512))
+	if(!se3_write_trace(b2_1,BLOCK_2_BASE_ADDRESS))
+		return false;
+	if(!se3_write_trace(b2_2,BLOCK_2_BASE_ADDRESS + 1))
+		return false;
+	if(!se3_write_trace(b2_3,BLOCK_2_BASE_ADDRESS + 2))
+		return false;
+	if(!se3_write_trace(b2_4,BLOCK_2_BASE_ADDRESS + 3))
+		return false;
+	if(!se3_write_trace(b2_5,BLOCK_2_BASE_ADDRESS + 4))
+		return false;
+	if(!se3_write_trace(b2_6,BLOCK_2_BASE_ADDRESS + 5))
+		return false;
+	if(!se3_write_trace(b2_7,BLOCK_2_BASE_ADDRESS + 6))
+		return false;
+	if(!se3_write_trace(b2_8,BLOCK_2_BASE_ADDRESS + 7))
 		return false;
 
-	if(!MYPRINTF(index,INDEX_BASE_ADDRESS,512))
+
+	if(!se3_write_trace(header,HEADER_BASE_ADDRESS))
 		return false;
-	if(!MYPRINTF(unknown,UNKNOWN_BASE_ADDRESS,512))
+
+	if(!se3_write_trace(index,INDEX_BASE_ADDRESS))
 		return false;
-	if(!MYPRINTF(unknown2,UNKNOWN2_BASE_ADDRESS,512))
+	if(!se3_write_trace(unknown,UNKNOWN_BASE_ADDRESS))
+		return false;
+	if(!se3_write_trace(unknown2,UNKNOWN2_BASE_ADDRESS))
 		return false;
 
 
-	if(!(sd_flush(DATA_BASE_ADDRESS)))
+	if(!(se3_debug_sd_flush(DATA_BASE_ADDRESS,DATA_BASE_ADDRESS+100)))
 		return false;
 
-	if(!MYPRINTF(hello_string,DATA_BASE_ADDRESS,512))
+	if(!se3_write_trace(se3_debug_create_string("File created...\0"),debug_address++))
 		return false;
-	if(!MYPRINTF("Miao\0",DATA_BASE_ADDRESS + 1 ,5))
-			return false;
-	if(!MYPRINTF("Cantami o diva del pelide achille, l'ira funesta che infiniti addusse lutti agli achei, molte anzi tempo all'orco\0",DATA_BASE_ADDRESS + 2 ,114))
-			return false;
 
 	return true;
+}
+
+
+char* se3_debug_create_string(char * string){
+
+	char* h_string;
+	h_string = (char*)calloc (512, sizeof(char));
+	strcpy(h_string,string);
+
+	return h_string;
 }
 
 
