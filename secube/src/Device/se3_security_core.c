@@ -194,7 +194,7 @@ uint16_t crypto_init(uint16_t req_size, const uint8_t* req, uint16_t* resp_size,
         }
         se3_key_read(&it, &key);
 
-		if (key.validity < se3c0_time_get() || !(get_now_initialized())) {
+		if (key.validity < se3_time_get() || !(get_now_initialized())) {
 			SE3_TRACE(("[crypto_init] key expired\n"));
 			return SE3_ERR_EXPIRED;
 		}
@@ -363,7 +363,7 @@ uint16_t crypto_set_time(uint16_t req_size, const uint8_t* req, uint16_t* resp_s
 
     SE3_GET32(req, SE3_CMD1_CRYPTO_SET_TIME_REQ_OFF_DEVTIME, req_params.devtime);
 
-    se3c0_time_set((uint64_t)req_params.devtime);
+    se3_time_set((uint64_t)req_params.devtime);
 
     return SE3_OK;
 }

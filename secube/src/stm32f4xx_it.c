@@ -63,7 +63,7 @@ void SysTick_Handler(void)
   HAL_IncTick();
   HAL_SYSTICK_IRQHandler();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-  se3c0_time_inc();
+  se3_time_inc();
   /* USER CODE END SysTick_IRQn 1 */
 }
 
@@ -145,6 +145,8 @@ void TIM2_IRQHandler(void){
 	//MYPRINTF("Entered in TIM2_IRQHandler...\0", (uint32_t)( BASE_DEBUG_ADDRESS + (debug_count++)));
 	sprintf(debug_buffer2,"Num: %d", (uint32_t)se3c0_time_get());
 	//MYPRINTF(debug_buffer2,(uint32_t)( BASE_DEBUG_ADDRESS + (debug_count++)));
+	sprintf(debug_buffer2,"Num: %d", (uint32_t)se3_time_get());
+	MYPRINTF(debug_buffer2,(uint32_t)( BASE_DEBUG_ADDRESS + (debug_count++)));
 }
 
 /* USER CODE BEGIN 1 */
