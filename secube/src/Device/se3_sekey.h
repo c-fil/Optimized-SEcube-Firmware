@@ -4,6 +4,8 @@
 #include <stdbool.h>
 
 #include "se3_security_core.h"
+#include "se3_smartcard.h"
+
 #include "se3_FPGA.h"
 
 

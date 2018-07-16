@@ -19,17 +19,20 @@ uint8_t* se3_sessions_index[SE3_SESSIONS_MAX];
 
 void device_init()
 {
+
 	se3_communication_core_init();
 	se3_time_init();
 	se3_flash_init();
     se3_dispatcher_init();
-    sd_flush();
-	//MYPRINTF("[se3_core_mio] We are in device_loop, setting the low power counter...\0", BASE_DEBUG_ADDRESS + (debug_count++));
-	count_up_to(300);
+
+	//count_up_to(300);
+    se3_create_log_file();
+    se3_write_trace(se3_debug_create_string("\n[se3_core_mio] Device Initalizations complete...\0"), debug_address++);
 }
 
 void device_loop()
 {
+	se3_write_trace(se3_debug_create_string("\nEntering in device_loop...\0"), debug_address++);
 	for (;;) {
 		if (comm.req_ready) {
 			comm.resp_ready = false;

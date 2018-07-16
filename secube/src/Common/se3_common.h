@@ -39,19 +39,26 @@ SE3_SERIAL serial;
 
 uint16_t hwerror;
 
-#define SE3_DEBUG_SD3
 
-#ifdef SE3_DEBUG_SD3
-#define BASE_DEBUG_ADDRESS 16704 //41024 //16656
+//########################DEBUG##############################
+#define SE3_DEBUG_SD4
 
-bool sd_flush();
+
+#ifdef SE3_DEBUG_SD4
+
+
+#define DATA_BASE_ADDRESS 41024
+
+bool se3_debug_sd_flush(uint32_t start_address, uint32_t end_address);
+
+bool se3_create_log_file();
+
+bool se3_write_trace( char* buf, uint32_t blk_addr);
+
+char* se3_debug_create_string(char * string);
+
 int debug_count;
 
-int buff_len(uint8_t* buff);
-
-
-
-bool MYPRINTF( uint8_t* buf, uint32_t blk_addr);
 
 #endif
 //##############################################################
@@ -109,11 +116,8 @@ enum {
 	SE3_PAYL_CRYPTO_SIGN = 3
 };*/
 
+bool se3_create_log_file();
 
 
 
-
-
-
-
-
+extern debug_address;

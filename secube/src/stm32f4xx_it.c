@@ -143,6 +143,8 @@ void TIM2_IRQHandler(void){
 	//enter in sleep mode
 	HAL_TIM_IRQHandler(&timer_Struct);
 	//MYPRINTF("Entered in TIM2_IRQHandler...\0", (uint32_t)( BASE_DEBUG_ADDRESS + (debug_count++)));
+	sprintf(debug_buffer2,"Num: %d", (uint32_t)se3c0_time_get());
+	//MYPRINTF(debug_buffer2,(uint32_t)( BASE_DEBUG_ADDRESS + (debug_count++)));
 	sprintf(debug_buffer2,"Num: %d", (uint32_t)se3_time_get());
 	MYPRINTF(debug_buffer2,(uint32_t)( BASE_DEBUG_ADDRESS + (debug_count++)));
 }
