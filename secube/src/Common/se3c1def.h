@@ -1,13 +1,12 @@
  /**
  *  \file se3c1def.h
- *  \brief This file contains defines to be used both for L1 and L0 
- *  	   functions
+ *  \brief This file contains defines to be used in all the modules
  */
 #pragma once
 
 #include "se3c0def.h"
 
-/** L1 errors */
+
 enum {
     SE3_ERR_ACCESS = 100,  ///< insufficient privileges
     SE3_ERR_PIN = 101,  ///< pin rejected

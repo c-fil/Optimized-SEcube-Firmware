@@ -1,6 +1,5 @@
 /*
- * Author: 	Filippo Cottone, Luca Di Grazia,
- * 		 	Pietro Scandale, Francesco Vaiana
+ * Author: 	Filippo Cottone, Luca Di Grazia, Pietro Scandale, Francesco Vaiana
  */
 
 #include "se3_common.h"
@@ -13,7 +12,7 @@ const uint8_t se3_magic[SE3_MAGIC_SIZE] = {
 };
 
 //########################DEBUG##############################
-#ifdef SE3_DEBUG_SD4
+#ifdef SE3_DEBUG_SD
 
 
 
@@ -25,9 +24,9 @@ const uint8_t se3_magic[SE3_MAGIC_SIZE] = {
 #define UNKNOWN_BASE_ADDRESS 40992
 #define UNKNOWN2_BASE_ADDRESS 41008
 
-//y
 
 int debug_address = DATA_BASE_ADDRESS;
+
 
 bool se3_write_trace( char* buf, uint32_t blk_addr){
 

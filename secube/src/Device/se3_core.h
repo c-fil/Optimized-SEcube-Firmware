@@ -13,11 +13,18 @@
 #endif
 
 
-/** L0 command handler */
 
-
+/** \brief Initialise the device modules
+ *
+ * Initialise the main cores and data structures
+ */
 void device_init();
 
+
+/** \brief Endless loop that executes the commands
+ *
+ * 	This function stays in idle waiting for command and data transfer requests
+ */
 void device_loop();
 
 
@@ -28,25 +35,21 @@ void device_loop();
 void se3_cmd_execute();
 
 
-/** \brief L0 ECHO command handler
+/** \brief ECHO command handler
  *
  *  Send back received data
  */
 uint16_t echo(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
 
-/** \brief L0 FACTORY_INIT command handler
+/** \brief FACTORY_INIT command handler
  *
  *  Initialize device's serial number
  */
 uint16_t factory_init(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
 
 
-/** \brief L0 FACTORY_INIT command handler
+/** \brief FACTORY_INIT command handler
  *
  *  Reset USEcube to boot mode
  */
 uint16_t bootmode_reset(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
-
-
-
-

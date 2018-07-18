@@ -65,7 +65,7 @@ enum {
 /** L0 command flags */
 enum {
     SE3_CMDFLAG_ENCRYPT = (1 << 15),  ///< encrypt L1 packet
-    SE3_CMDFLAG_SIGN = (1 << 14) ///< sign L1 payload
+    SE3_CMDFLAG_SIGN = (1 << 14) ///< sign payload
 };
 
 /** Request fields */

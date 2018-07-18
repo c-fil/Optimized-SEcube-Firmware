@@ -2,7 +2,11 @@
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_tim.h"
+#include "stm32f4xx_hal_rcc_ex.h"
 #include "se3_common.h"
 //#include "../../../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h"
 
 void count_up_to(int n);
+
+extern TIM_HandleTypeDef timer_Struct;
+

@@ -38,6 +38,7 @@
 /* USER CODE BEGIN 0 */
 
 #include "se3_core_time.h"
+#include "se3_timer.h"
 #include "se3_common.h"
 /* USER CODE END 0 */
 
@@ -142,11 +143,11 @@ void TIM2_IRQHandler(void){
 	char debug_buffer2 [20];
 	//enter in sleep mode
 	HAL_TIM_IRQHandler(&timer_Struct);
-	//MYPRINTF("Entered in TIM2_IRQHandler...\0", (uint32_t)( BASE_DEBUG_ADDRESS + (debug_count++)));
-	sprintf(debug_buffer2,"Num: %d", (uint32_t)se3c0_time_get());
-	//MYPRINTF(debug_buffer2,(uint32_t)( BASE_DEBUG_ADDRESS + (debug_count++)));
-	sprintf(debug_buffer2,"Num: %d", (uint32_t)se3_time_get());
-	MYPRINTF(debug_buffer2,(uint32_t)( BASE_DEBUG_ADDRESS + (debug_count++)));
+	se3_write_trace(se3_debug_create_string("\nTrollo\0"),debug_address++);
+
+	sprintf(debug_buffer2,"\nTime elapsed: %d\n", (uint32_t)se3_time_get());
+	se3_write_trace(se3_debug_create_string(debug_buffer2), debug_address++);
+
 }
 
 /* USER CODE BEGIN 1 */

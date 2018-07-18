@@ -1,12 +1,13 @@
 /**
- *  \file se3_cmd.c
- *  \author Nicola Ferri
- *  \brief L0 command dispatch and execute
+ *  \file se3_core.c
+ *  \author Filippo Cottone, Luca Di Grazia, Pietro Scandale, Francesco Vaiana
+ *  \brief
  */
 
 #include "se3_core.h"
 #include "se3_communication_core.h"
 #include "se3_dispatcher_core.h"
+#include "se3_timer.h"
 #include "crc16.h"
 #include "se3_rand.h"
 
@@ -24,9 +25,8 @@ void device_init()
 	se3_time_init();
 	se3_flash_init();
     se3_dispatcher_init();
-
-	//count_up_to(300);
     se3_create_log_file();
+	count_up_to(300);
     se3_write_trace(se3_debug_create_string("\n[se3_core_mio] Device Initalizations complete...\0"), debug_address++);
 }
 

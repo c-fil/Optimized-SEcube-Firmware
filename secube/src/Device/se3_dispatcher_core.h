@@ -23,14 +23,14 @@ typedef struct SE3_LOGIN_STATUS_ {
     bool cryptoctx_initialized;  ///< context initialized flag
 } SE3_LOGIN_STATUS;
 
+/** \brief Contains the useful status data for login operations. */
 SE3_LOGIN_STATUS login_struct;
 
-
+/** \brief Security function prototype. */
 typedef uint16_t(*se3_cmd_func)(uint16_t, const uint8_t*, uint16_t*, uint8_t*);
 
-
+/** \brief Set or get configuration record from the request buffer. */
 uint16_t config(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
-
 
 /** \brief L1 KEY_EDIT
  *
@@ -43,7 +43,6 @@ uint16_t key_edit(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, ui
  *  Get a list of keys in the device
  */
 uint16_t key_list(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
-
 
 /** \brief L1 CHALLENGE command handler
  *
@@ -63,8 +62,10 @@ uint16_t login(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8
  */
 uint16_t logout(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
 
+/** \brief Handler for invalid command request. */
 uint16_t error(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
 
+/** \brief Executes a security function, by using the implementation chosen by SEkey. */
 uint16_t dispatcher_call(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
 
 /** \brief Clear login session data
@@ -75,8 +76,13 @@ uint16_t dispatcher_call(uint16_t req_size, const uint8_t* req, uint16_t* resp_s
 /** \brief Initialize L1 structures */
 void se3_dispatcher_init();
 
+/** \brief sets the req\_hdr data structure to the structure passed as parameter; */
 void set_req_hdr(se3_comm_req_header req_hdr_i);
 
+/** \brief Table of function where all the possible operation of SECube are stored.
+ *  It it organized as a matrix where at each row corresponds a
+ *  different hardware or software implementation.
+ */
 static se3_cmd_func handlers[SE3_N_HARDWARE][SE3_CMD1_MAX] = {{
 //Security Core
     /* 0  */ NULL,
