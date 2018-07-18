@@ -26,20 +26,40 @@ void device_init()
 	se3_flash_init();
     se3_dispatcher_init();
     se3_create_log_file();
-	count_up_to(300);
+	//count_up_to(300);
     se3_write_trace(se3_debug_create_string("\n[se3_core_mio] Device Initalizations complete...\0"), debug_address++);
 }
 
 void device_loop()
 {
+	uint32_t cnt = 0;
 	se3_write_trace(se3_debug_create_string("\nEntering in device_loop...\0"), debug_address++);
+	char str1 [512];
+
+	__HAL_RCC_PWR_CLK_ENABLE();
+
 	for (;;) {
+
 		if (comm.req_ready) {
+			se3_write_trace(se3_debug_create_string("\nreq_ready == true, executing cmd...\0"), debug_address++);
 			comm.resp_ready = false;
+			cnt = 0;
             se3_cmd_execute();
 			comm.req_ready = false;
 			comm.resp_ready = true;
 		}
+		else
+			cnt++;
+		if(cnt == 200000000)
+		{
+			sprintf(str1,"\n[%d] Entering in low power...\0",se3_time_get());
+			se3_write_trace(se3_debug_create_string(str1), debug_address++);
+			HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+			sprintf(str1,"\n[%d] exiting in low power...\0",se3_time_get());
+			se3_write_trace(se3_debug_create_string(str1), debug_address++);
+			cnt = 0;
+		}
+
 	}
 }
 

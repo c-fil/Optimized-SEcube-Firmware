@@ -145,6 +145,9 @@ void TIM2_IRQHandler(void){
 	HAL_TIM_IRQHandler(&timer_Struct);
 	se3_write_trace(se3_debug_create_string("\nTrollo\0"),debug_address++);
 
+	//enters sleep mode
+	//HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+
 	sprintf(debug_buffer2,"\nTime elapsed: %d\n", (uint32_t)se3_time_get());
 	se3_write_trace(se3_debug_create_string(debug_buffer2), debug_address++);
 
