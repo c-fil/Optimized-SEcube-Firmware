@@ -28,6 +28,7 @@ bool se3_key_find(uint32_t id, se3_flash_it* it)
 	}
 	return false;
 }
+
 bool se3_key_remove(se3_flash_it* it)
 {
 	if (!se3_flash_it_delete(it)) {

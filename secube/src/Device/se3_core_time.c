@@ -1,15 +1,19 @@
+/**
+ *  \file se3_core_time.c
+ *  \author Nicola Ferri
+ *  \brief Core Timer
+ */
+
 #include "se3_core_time.h"
 
 uint64_t now;  ///< current UNIX time in seconds
 bool now_initialized;  ///< time was initialized
-
+int flag = 1;
 
 void se3_time_init(){
 	now_initialized = false;
 	now = 0;
 }
-
-
 
 uint64_t se3_time_get()
 {
@@ -29,6 +33,7 @@ void se3_time_inc()
 {
     static unsigned int ms = 0;
     if (++ms == 1000) {
+    	flag = 0;
         (now)++;
         ms = 0;
     }

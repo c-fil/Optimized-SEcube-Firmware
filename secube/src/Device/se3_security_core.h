@@ -1,3 +1,8 @@
+/**
+ *  \file se3_security_core.h
+ *  \author Nicola Ferri
+ *  \brief Security core
+ */
 #pragma once
 
 #include "se3_core_time.h"
@@ -45,7 +50,6 @@ typedef struct SE3_SECURITY_INFO_ {
     uint16_t sessions_algo[SE3_SESSIONS_MAX];
 } SE3_SECURITY_INFO;
 
-
 /** \brief L1_crypto_init function type */
 typedef uint16_t(*se3_crypto_init_handler)(
 	se3_flash_key* key, uint16_t mode, uint8_t* ctx);
@@ -76,8 +80,6 @@ typedef struct se3_payload_cryptoctx_ {
     uint8_t auth[B5_SHA256_DIGEST_SIZE];
 } se3_payload_cryptoctx;
 
-
-
 /** \brief Write record
  *
  *  Set data of a record
@@ -97,28 +99,27 @@ bool record_set(uint16_t type, const uint8_t* data);
 */
 bool record_get(uint16_t type, uint8_t* data);
 
-
 // ---- crypto ----
 
-/** \brief L1 CRYPTO_INIT handler
+/** \brief CRYPTO_INIT handler
  *
  *  Initialize a cryptographic context
  */
 uint16_t crypto_init(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
 
-/** \brief L1 CRYPTO_UPDATE handler
+/** \brief CRYPTO_UPDATE handler
  *
  *  Use a cryptographic context
  */
 uint16_t crypto_update(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
 
-/** \brief L1 CRYPTO_SET_TIME handler
+/** \brief CRYPTO_SET_TIME handler
  *
  *  Set device time for key validity
  */
 uint16_t crypto_set_time(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
 
-/** \brief L1 CRYPTO_SET_TIME handler
+/** \brief CRYPTO_LIST handler
  *
  *  Get list of available algorithms
  */
@@ -127,12 +128,13 @@ uint16_t crypto_list(uint16_t req_size, const uint8_t* req, uint16_t* resp_size,
 void se3_security_core_init();
 
 void se3_payload_cryptoinit(se3_payload_cryptoctx* ctx, const uint8_t* key);
+
 bool se3_payload_encrypt(se3_payload_cryptoctx* ctx, uint8_t* auth, uint8_t* iv, uint8_t* data, uint16_t nblocks, uint16_t flags, uint8_t crypto_algo);
+
 bool se3_payload_decrypt(se3_payload_cryptoctx* ctx, const uint8_t* auth, const uint8_t* iv, uint8_t* data, uint16_t nblocks, uint16_t flags, uint8_t crypto_algo);
 
-/** \brief L1 globals */
+/** \brief globals */
  SE3_SECURITY_INFO se3_security_info;
-
 
 /** session buffer */
 extern uint8_t se3_sessions_buf[SE3_SESSIONS_BUF];

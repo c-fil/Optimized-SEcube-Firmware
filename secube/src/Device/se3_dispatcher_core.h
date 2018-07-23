@@ -1,6 +1,10 @@
+/**
+ *  \file se3_dispatcher_core.h
+ *  \author Nicola Ferri
+ *  \brief Dispatcher core
+ */
+
 #include "se3_security_core.h"
-//#include <se3c0def.h>
-//#include <stdbool.h>
 #include "se3_keys.h"
 #include "se3_common.h"
 #include "se3_rand.h"
@@ -32,31 +36,31 @@ typedef uint16_t(*se3_cmd_func)(uint16_t, const uint8_t*, uint16_t*, uint8_t*);
 /** \brief Set or get configuration record from the request buffer. */
 uint16_t config(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
 
-/** \brief L1 KEY_EDIT
+/** \brief KEY_EDIT
  *
  *  Insert, delete or update a key
  */
 uint16_t key_edit(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
 
-/** \brief L1 KEY_LIST
+/** \brief KEY_LIST
  *
  *  Get a list of keys in the device
  */
 uint16_t key_list(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
 
-/** \brief L1 CHALLENGE command handler
+/** \brief CHALLENGE command handler
  *
  *  Get a login challenge from the device
  */
 uint16_t challenge(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
 
-/** \brief L1 LOGIN command handler
+/** \brief LOGIN command handler
  *
  *  Respond to challenge and complete the login
  */
 uint16_t login(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
 
-/** \brief L1 LOGOUT command handler
+/** \brief LOGOUT command handler
  *
  *  Log out and release resources
  */

@@ -1,4 +1,9 @@
- #pragma once
+/**
+ *  \file se3_core.h
+ *  \author Nicola Ferri
+ *  \brief Main Core
+ */
+#pragma once
 
 
 #include <se3c0def.h>
