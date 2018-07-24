@@ -8,12 +8,9 @@
 #include "se3_core.h"
 #include "se3_communication_core.h"
 #include "se3_dispatcher_core.h"
-#include "se3_timer.h"
 #include "crc16.h"
 #include "se3_rand.h"
 
-#include "stm32f4xx_hal_cortex.h"
-#include "stm32f4xx_it.h"
 
 
 
@@ -42,7 +39,6 @@ void device_init()
 
 void device_loop()
 {
-	uint32_t cnt = 0;
 	/*se3_write_trace(se3_debug_create_string("\nEntering in device_loop...\0"), debug_address++);*/
 
 	for (;;) {
@@ -50,7 +46,6 @@ void device_loop()
 		if (comm.req_ready) {
 			/*se3_write_trace(se3_debug_create_string("\nreq_ready == true, executing cmd...\0"), debug_address++);*/
 			comm.resp_ready = false;
-			cnt = 0;
             se3_cmd_execute();
 			comm.req_ready = false;
 			comm.resp_ready = true;

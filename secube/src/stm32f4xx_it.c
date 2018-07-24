@@ -38,7 +38,6 @@
 /* USER CODE BEGIN 0 */
 
 #include "se3_core_time.h"
-#include "se3_timer.h"
 #include "se3_common.h"
 /* USER CODE END 0 */
 

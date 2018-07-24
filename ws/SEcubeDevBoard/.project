@@ -491,6 +491,16 @@
 			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Common/sha256.h</locationURI>
 		</link>
 		<link>
+			<name>Application/src/Device/se3_FPGA.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_FPGA.c</locationURI>
+		</link>
+		<link>
+			<name>Application/src/Device/se3_FPGA.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_FPGA.h</locationURI>
+		</link>
+		<link>
 			<name>Application/src/Device/se3_algo_Aes.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_algo_Aes.c</locationURI>
@@ -539,56 +549,6 @@
 			<name>Application/src/Device/se3_algo_sha256.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_algo_sha256.h</locationURI>
-		</link>
-		<link>
-			<name>Application/src/Device/se3_sekey.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_sekey.c</locationURI>
-		</link>
-		<link>
-			<name>Application/src/Device/se3_sekey.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_sekey.h</locationURI>
-		</link>
-		<link>
-			<name>Application/src/Device/se3_low_power.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_low_power.c</locationURI>
-		</link>
-		<link>
-			<name>Application/src/Device/se3_low_power.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_low_power.h</locationURI>
-		</link>
-		<link>
-			<name>Application/src/Device/se3_timer.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_timer.c</locationURI>
-		</link>
-		<link>
-			<name>Application/src/Device/se3_timer.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_timer.h</locationURI>
-		</link>
-		<link>
-			<name>Application/src/Device/se3_FPGA.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_FPGA.c</locationURI>
-		</link>
-		<link>
-			<name>Application/src/Device/se3_FPGA.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_FPGA.h</locationURI>
-		</link>
-		<link>
-			<name>Application/src/Device/se3_smartcard.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_smartcard.c</locationURI>
-		</link>
-		<link>
-			<name>Application/src/Device/se3_smartcard.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_smartcard.h</locationURI>
 		</link>
 		<link>
 			<name>Application/src/Device/se3_communication_core.c</name>
@@ -669,6 +629,26 @@
 			<name>Application/src/Device/se3_security_core.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_security_core.h</locationURI>
+		</link>
+		<link>
+			<name>Application/src/Device/se3_sekey.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_sekey.c</locationURI>
+		</link>
+		<link>
+			<name>Application/src/Device/se3_sekey.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_sekey.h</locationURI>
+		</link>
+		<link>
+			<name>Application/src/Device/se3_smartcard.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_smartcard.c</locationURI>
+		</link>
+		<link>
+			<name>Application/src/Device/se3_smartcard.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/secube/src/Device/se3_smartcard.h</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
