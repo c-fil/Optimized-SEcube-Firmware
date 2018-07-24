@@ -1,6 +1,7 @@
 /**
  *  \file se3_communication_core.c
  *  \author Nicola Ferri
+ *  \co-author Filippo Cottone, Pietro Scandale, Francesco Vaiana, Luca Di Grazia
  *  \brief USB read/write handlers
  */
 

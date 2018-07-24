@@ -43,7 +43,7 @@ enum {
 
 
 
-/** L0 error codes */
+/** error codes */
 enum {
     SE3_OK = 0,  ///< success
     SE3_ERR_HW = 0xF001,  ///< hardware failure
@@ -54,7 +54,7 @@ enum {
     SE3_ERR_PARAMS = 0xF006,  ///< parameters are not valid
 };
 
-/** L0 command codes */
+/** command codes */
 enum {
     SE3_CMD0_FACTORY_INIT = 1,
     SE3_CMD0_ECHO = 2,
@@ -62,9 +62,9 @@ enum {
 	SE3_CMD0_BOOT_MODE_RESET = 4
 };
 
-/** L0 command flags */
+/** command flags */
 enum {
-    SE3_CMDFLAG_ENCRYPT = (1 << 15),  ///< encrypt L1 packet
+    SE3_CMDFLAG_ENCRYPT = (1 << 15),  ///< encrypt packet
     SE3_CMDFLAG_SIGN = (1 << 14) ///< sign payload
 };
 

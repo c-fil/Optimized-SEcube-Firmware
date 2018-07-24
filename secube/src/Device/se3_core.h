@@ -1,6 +1,7 @@
 /**
  *  \file se3_core.h
  *  \author Nicola Ferri
+ *  \co-author Filippo Cottone, Pietro Scandale, Francesco Vaiana, Luca Di Grazia
  *  \brief Main Core
  */
 #pragma once

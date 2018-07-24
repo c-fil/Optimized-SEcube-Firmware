@@ -1,6 +1,7 @@
 /**
  *  \file se3_core_time.c
  *  \author Nicola Ferri
+ *  \co-author Filippo Cottone, Pietro Scandale, Francesco Vaiana, Luca Di Grazia
  *  \brief Core Timer
  */
 

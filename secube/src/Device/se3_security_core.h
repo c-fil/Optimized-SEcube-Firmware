@@ -50,11 +50,11 @@ typedef struct SE3_SECURITY_INFO_ {
     uint16_t sessions_algo[SE3_SESSIONS_MAX];
 } SE3_SECURITY_INFO;
 
-/** \brief L1_crypto_init function type */
+/** \brief crypto_init function type */
 typedef uint16_t(*se3_crypto_init_handler)(
 	se3_flash_key* key, uint16_t mode, uint8_t* ctx);
 
-/** \brief L1_crypto_update function type */
+/** \brief crypto_update function type */
 typedef uint16_t(*se3_crypto_update_handler)(
 	uint8_t* ctx, uint16_t flags,
 	uint16_t datain1_len, const uint8_t* datain1,
@@ -63,8 +63,8 @@ typedef uint16_t(*se3_crypto_update_handler)(
 
 /** \brief algorithm descriptor type */
 typedef struct se3_algo_descriptor_ {
-	se3_crypto_init_handler init;  ///< L1_crypto_init function
-	se3_crypto_update_handler update;  ///< L1_crypto_update function
+	se3_crypto_init_handler init;  ///< crypto_init function
+	se3_crypto_update_handler update;  ///< crypto_update function
 	uint16_t size;  ///< context size size
 	char display_name[16];  ///< name for the algorithm list API
 	uint16_t display_type;  ///< type for the algorithm list API
@@ -125,13 +125,38 @@ uint16_t crypto_set_time(uint16_t req_size, const uint8_t* req, uint16_t* resp_s
  */
 uint16_t crypto_list(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp);
 
+/** \brief Security Core initialization
+ *
+ *  Inizialitazion of Security Core data structures
+ */
 void se3_security_core_init();
 
+
+/** \brief Crypto algo initializator
+ *
+ *  Initialise the cryptographics algorithms
+ */
 void se3_payload_cryptoinit(se3_payload_cryptoctx* ctx, const uint8_t* key);
 
+
+/** \brief data buffer encrypt function
+ *
+ *  encrypt the data buffer by using the algorithm
+ *  assigned by SEkey decribed by the crypto_algo
+ *  input parameter
+ */
 bool se3_payload_encrypt(se3_payload_cryptoctx* ctx, uint8_t* auth, uint8_t* iv, uint8_t* data, uint16_t nblocks, uint16_t flags, uint8_t crypto_algo);
 
+
+/** \brief data buffer decrypt function
+ *
+ *  decrypt the data buffer by using the algorithm
+ *  assigned by SEkey decribed by the crypto_algo
+ *  input parameter;
+ */
 bool se3_payload_decrypt(se3_payload_cryptoctx* ctx, const uint8_t* auth, const uint8_t* iv, uint8_t* data, uint16_t nblocks, uint16_t flags, uint8_t crypto_algo);
+
+
 
 /** \brief globals */
  SE3_SECURITY_INFO se3_security_info;

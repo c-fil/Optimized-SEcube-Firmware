@@ -1,6 +1,7 @@
 /**
  *  \file se3_dispatcher_core.c
  *  \author Nicola Ferri
+ *  \co-author Filippo Cottone, Pietro Scandale, Francesco Vaiana, Luca Di Grazia
  *  \brief Dispatcher core
  */
 
@@ -103,13 +104,13 @@ uint16_t config(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint
 	sc      server(=device) challenge
 			random(32)
 	cresp   client(=host) response
-			PBKDF2(HMAC-SHA256, pin, sc, SE3_L1_CHALLENGE_ITERATIONS, SE3_CHALLENGE_SIZE)
+			PBKDF2(HMAC-SHA256, pin, sc, SE3_CHALLENGE_ITERATIONS, SE3_CHALLENGE_SIZE)
 	sresp   server(=device) response
-			PBKDF2(HMAC-SHA256, pin, cc1, SE3_L1_CHALLENGE_ITERATIONS, SE3_CHALLENGE_SIZE)
-	key     session key for enc/auth of L1 protocol
-			PBKDF2(HMAC-SHA256, pin, cc2, 1, SE3_L1_PIN_SIZE)
+			PBKDF2(HMAC-SHA256, pin, cc1, SE3_CHALLENGE_ITERATIONS, SE3_CHALLENGE_SIZE)
+	key     session key for enc/auth of protocol
+			PBKDF2(HMAC-SHA256, pin, cc2, 1, SE3_PIN_SIZE)
 
-	L1_challenge (not encrypted)
+	challenge (not encrypted)
 		host
 			generate cc1,cc2
 			send cc1,cc2
@@ -117,7 +118,7 @@ uint16_t config(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint
 			generate sc
 			compute sresp, cresp, key
 			send sresp
-	L1_login (encrypted with key)
+	login (encrypted with key)
 		host
 			compute sresp, cresp, key
 			check sresp
@@ -134,7 +135,7 @@ uint16_t config(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint
 uint16_t challenge(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp)
 {
     static B5_tSha256Ctx sha;
-    uint8_t pin[SE3_L1_PIN_SIZE];
+    uint8_t pin[SE3_PIN_SIZE];
     struct {
         const uint8_t* cc1;
         const uint16_t access;
@@ -162,7 +163,7 @@ uint16_t challenge(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, u
 	}
 
     // default pin is zero, if no record is found
-    memset(pin, 0, SE3_L1_PIN_SIZE);
+    memset(pin, 0, SE3_PIN_SIZE);
     switch (req_params.access) {
     case SE3_ACCESS_USER:
         record_get(SE3_RECORD_TYPE_USERPIN, pin);
@@ -174,22 +175,22 @@ uint16_t challenge(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, u
         return SE3_ERR_PARAMS;
 	}
 
-	if (SE3_L1_CHALLENGE_SIZE != se3_rand(SE3_L1_CHALLENGE_SIZE, resp_params.sc)) {
+	if (SE3_CHALLENGE_SIZE != se3_rand(SE3_CHALLENGE_SIZE, resp_params.sc)) {
 		SE3_TRACE(("[challenge] se3_rand failed"));
 		return SE3_ERR_HW;
 	}
 
-	// cresp = PBKDF2(HMACSHA256, pin, sc, SE3_L1_CHALLENGE_ITERATIONS, SE3_CHALLENGE_SIZE)
-	PBKDF2HmacSha256(pin, SE3_L1_PIN_SIZE, resp_params.sc,
-		SE3_L1_CHALLENGE_SIZE, SE3_L1_CHALLENGE_ITERATIONS, login_struct.challenge, SE3_L1_CHALLENGE_SIZE);
+	// cresp = PBKDF2(HMACSHA256, pin, sc, SE3_CHALLENGE_ITERATIONS, SE3_CHALLENGE_SIZE)
+	PBKDF2HmacSha256(pin, SE3_PIN_SIZE, resp_params.sc,
+		SE3_CHALLENGE_SIZE, SE3_CHALLENGE_ITERATIONS, login_struct.challenge, SE3_CHALLENGE_SIZE);
 
-	// sresp = PBKDF2(HMACSHA256, pin, cc1, SE3_L1_CHALLENGE_ITERATIONS, SE3_CHALLENGE_SIZE)
-	PBKDF2HmacSha256(pin, SE3_L1_PIN_SIZE, req_params.cc1,
-		SE3_L1_CHALLENGE_SIZE, SE3_L1_CHALLENGE_ITERATIONS, resp_params.sresp, SE3_L1_CHALLENGE_SIZE);
+	// sresp = PBKDF2(HMACSHA256, pin, cc1, SE3_CHALLENGE_ITERATIONS, SE3_CHALLENGE_SIZE)
+	PBKDF2HmacSha256(pin, SE3_PIN_SIZE, req_params.cc1,
+		SE3_CHALLENGE_SIZE, SE3_CHALLENGE_ITERATIONS, resp_params.sresp, SE3_CHALLENGE_SIZE);
 
-	// key = PBKDF2(HMACSHA256, pin, cc2, 1, SE3_L1_PIN_SIZE)
-	PBKDF2HmacSha256(pin, SE3_L1_PIN_SIZE, req_params.cc2,
-		SE3_L1_CHALLENGE_SIZE, 1, login_struct.key, SE3_L1_PIN_SIZE);
+	// key = PBKDF2(HMACSHA256, pin, cc2, 1, SE3_PIN_SIZE)
+	PBKDF2HmacSha256(pin, SE3_PIN_SIZE, req_params.cc2,
+		SE3_CHALLENGE_SIZE, 1, login_struct.key, SE3_PIN_SIZE);
 
 	login_struct.challenge_access = req_params.access;
 
@@ -235,7 +236,7 @@ uint16_t login(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8
 		return SE3_ERR_PIN;
 	}
 
-	if (SE3_L1_TOKEN_SIZE != se3_rand(SE3_L1_TOKEN_SIZE, (uint8_t*)login_struct.token)) {
+	if (SE3_TOKEN_SIZE != se3_rand(SE3_TOKEN_SIZE, (uint8_t*)login_struct.token)) {
 		SE3_TRACE(("[login] random failed"));
 		return SE3_ERR_HW;
 	}
@@ -491,15 +492,15 @@ uint16_t dispatcher_call(uint16_t req_size, const uint8_t* req, uint16_t* resp_s
     }
     if (!se3_payload_decrypt(
         &(login_struct.cryptoctx), req_params.auth, req_params.iv,
-        /* !! modifying request */ (uint8_t*)(req  + SE3_L1_AUTH_SIZE + SE3_L1_IV_SIZE),
-        (req_size - SE3_L1_AUTH_SIZE - SE3_L1_IV_SIZE) / SE3_L1_CRYPTOBLOCK_SIZE, req_hdr.cmd_flags, crypto_algo))
+        /* !! modifying request */ (uint8_t*)(req  + SE3_AUTH_SIZE + SE3_IV_SIZE),
+        (req_size - SE3_AUTH_SIZE - SE3_IV_SIZE) / SE3_CRYPTOBLOCK_SIZE, req_hdr.cmd_flags, crypto_algo))
     {
         SE3_TRACE(("[dispatcher_call] AUTH failed\n"));
         return SE3_ERR_COMM;
     }
 
     if (login_struct.y) {
-        if (memcmp(login_struct.token, req_params.token, SE3_L1_TOKEN_SIZE)) {
+        if (memcmp(login_struct.token, req_params.token, SE3_TOKEN_SIZE)) {
             SE3_TRACE(("[dispatcher_call] login token mismatch\n"));
             return SE3_ERR_ACCESS;
         }
@@ -514,8 +515,8 @@ uint16_t dispatcher_call(uint16_t req_size, const uint8_t* req, uint16_t* resp_s
     		return SE3_ERR_ACCESS;                                     			//
     	}																		//
     																			//
-    																			//  TODO: ADDED BY US
-    	if(sekey_get_implementation_info(&algo_implementation, 						//
+    																			//
+    	if(sekey_get_implementation_info(&algo_implementation, 					// SEkey call interface
     			&crypto_algo, login_struct.key))								//
     		handler = handlers[algo_implementation][req_params.cmd];			//
     	else																	//
@@ -540,9 +541,9 @@ uint16_t dispatcher_call(uint16_t req_size, const uint8_t* req, uint16_t* resp_s
     resp_params.data = resp1;
 
     resp1_size_padded = resp1_size;
-    if (resp1_size_padded % SE3_L1_CRYPTOBLOCK_SIZE != 0) {
-        memset(resp1 + resp1_size_padded, 0, (SE3_L1_CRYPTOBLOCK_SIZE - (resp1_size_padded % SE3_L1_CRYPTOBLOCK_SIZE)));
-        resp1_size_padded += (SE3_L1_CRYPTOBLOCK_SIZE - (resp1_size_padded % SE3_L1_CRYPTOBLOCK_SIZE));
+    if (resp1_size_padded % SE3_CRYPTOBLOCK_SIZE != 0) {
+        memset(resp1 + resp1_size_padded, 0, (SE3_CRYPTOBLOCK_SIZE - (resp1_size_padded % SE3_CRYPTOBLOCK_SIZE)));
+        resp1_size_padded += (SE3_CRYPTOBLOCK_SIZE - (resp1_size_padded % SE3_CRYPTOBLOCK_SIZE));
     }
 
     *resp_size = SE3_RESP1_OFFSET_DATA + resp1_size_padded;
@@ -551,28 +552,28 @@ uint16_t dispatcher_call(uint16_t req_size, const uint8_t* req, uint16_t* resp_s
     SE3_SET16(resp, SE3_RESP1_OFFSET_LEN, resp_params.len);
     SE3_SET16(resp, SE3_RESP1_OFFSET_STATUS, resp_params.status);
     if (login_struct.y) {
-        memcpy(resp + SE3_RESP1_OFFSET_TOKEN, login_struct.token, SE3_L1_TOKEN_SIZE);
+        memcpy(resp + SE3_RESP1_OFFSET_TOKEN, login_struct.token, SE3_TOKEN_SIZE);
     }
     else {
-        memset(resp + SE3_RESP1_OFFSET_TOKEN, 0, SE3_L1_TOKEN_SIZE);
+        memset(resp + SE3_RESP1_OFFSET_TOKEN, 0, SE3_TOKEN_SIZE);
     }
 	if (req_hdr.cmd_flags & SE3_CMDFLAG_ENCRYPT) {
-		se3_rand(SE3_L1_IV_SIZE, resp_params.iv);
+		se3_rand(SE3_IV_SIZE, resp_params.iv);
 	}
 	else {
-		memset(resp_params.iv, 0, SE3_L1_IV_SIZE);
+		memset(resp_params.iv, 0, SE3_IV_SIZE);
 	}
 
-	//TODO: added by us
+	//Implementation choice, depended on the SEkey choice
 	switch(algo_implementation){
 	case SE3_SECURITY_CORE: se3_payload_encrypt(
 						&(login_struct.cryptoctx), resp_params.auth, resp_params.iv,
-						resp + SE3_L1_AUTH_SIZE + SE3_L1_IV_SIZE, (*resp_size - SE3_L1_AUTH_SIZE - SE3_L1_IV_SIZE) / SE3_L1_CRYPTOBLOCK_SIZE, req_hdr.cmd_flags, crypto_algo);
+						resp + SE3_AUTH_SIZE + SE3_IV_SIZE, (*resp_size - SE3_AUTH_SIZE - SE3_IV_SIZE) / SE3_CRYPTOBLOCK_SIZE, req_hdr.cmd_flags, crypto_algo);
 						break;
 
-	case SE3_SMARTCARD: //to be implemented
+	case SE3_SMARTCARD: //TODO: to be implemented
 
-	case SE3_FPGA: //to be implemented
+	case SE3_FPGA: //TODO: to be implemented
 
 	default: return SE3_ERR_RESOURCE; break;
 	}
@@ -613,9 +614,9 @@ static void login_cleanup()
     login_struct.access = 0;
     login_struct.challenge_access = SE3_ACCESS_MAX;
     login_struct.cryptoctx_initialized = false;
-    //memset(login.key, 0, SE3_L1_KEY_SIZE);
-    memcpy(login_struct.key, se3_magic, SE3_L1_KEY_SIZE);
-    memset(login_struct.token, 0, SE3_L1_TOKEN_SIZE);
+    //memset(login.key, 0, SE3_KEY_SIZE);
+    memcpy(login_struct.key, se3_magic, SE3_KEY_SIZE);
+    memset(login_struct.token, 0, SE3_TOKEN_SIZE);
     for (i = 0; i < SE3_SESSIONS_MAX; i++) {
         se3_security_info.sessions_algo[i] = SE3_ALGO_INVALID;
     }

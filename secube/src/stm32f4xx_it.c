@@ -47,7 +47,6 @@ extern PCD_HandleTypeDef hpcd_USB_OTG_HS;
 extern DMA_HandleTypeDef hdma_sdio_rx;
 extern DMA_HandleTypeDef hdma_sdio_tx;
 extern SD_HandleTypeDef hsd;
-extern TIM_HandleTypeDef timer_Struct;
 
 /******************************************************************************/
 /*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
@@ -129,24 +128,6 @@ void OTG_HS_IRQHandler(void)
   /* USER CODE BEGIN OTG_HS_IRQn 1 */
 
   /* USER CODE END OTG_HS_IRQn 1 */
-}
-
-/**
- * @brief This function handles TIM2 interrupt.
- */
-void TIM2_IRQHandler(void){
-//This is a project of mine
-	char debug_buffer2 [20];
-	//enter in sleep mode
-	HAL_TIM_IRQHandler(&timer_Struct);
-	se3_write_trace(se3_debug_create_string("\nTrollo\0"),debug_address++);
-
-	//enters sleep mode
-	//HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
-
-	sprintf(debug_buffer2,"\nTime elapsed: %d\n", (uint32_t)se3_time_get());
-	se3_write_trace(se3_debug_create_string(debug_buffer2), debug_address++);
-
 }
 
 /* USER CODE BEGIN 1 */

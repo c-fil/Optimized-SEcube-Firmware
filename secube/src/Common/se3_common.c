@@ -1,5 +1,7 @@
-/*
- * Author: 	Filippo Cottone, Luca Di Grazia, Pietro Scandale, Francesco Vaiana
+/**
+ *  \file se3_common.c
+ *  \author Nicola Ferri, Filippo Cottone, Pietro Scandale, Francesco Vaiana, Luca Di Grazia
+ *  \brief Common functions and data structures. Debug tools are also here
  */
 
 #include "se3_common.h"

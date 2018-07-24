@@ -1,6 +1,7 @@
 /**
  *  \file se3_core_time.h
  *  \author Nicola Ferri
+ *  \co-author Filippo Cottone, Pietro Scandale, Francesco Vaiana, Luca Di Grazia
  *  \brief Core Timer
  */
 
@@ -13,7 +14,6 @@
 #include "se3c0def.h"
 #include "se3_common.h"
 
-int i;
 
 /** \brief Initializes timer */
 void se3_time_init();

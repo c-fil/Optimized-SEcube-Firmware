@@ -1,6 +1,9 @@
-/*  \brief This file contains defines and common and Debug functions for all the modules
- * 
+/**
+ *  \file se3_common.h
+ *  \author Nicola Ferri, Filippo Cottone, Pietro Scandale, Francesco Vaiana, Luca Di Grazia
+ *  \brief Common functions and data structures. Debug tools are also here
  */
+
 
 #pragma once
 
@@ -32,7 +35,7 @@ SE3_SERIAL serial;
 uint16_t hwerror;
 
 //########################DEBUG##############################
-#define SE3_DEBUG_SD
+//#define SE3_DEBUG_SD
 
 #ifdef SE3_DEBUG_SD
 

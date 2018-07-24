@@ -1,6 +1,7 @@
 /**
  *  \file se3_security_core.c
  *  \author Nicola Ferri
+ *  \co-author Filippo Cottone, Pietro Scandale, Francesco Vaiana, Luca Di Grazia
  *  \brief Security core
  */
 
@@ -245,7 +246,7 @@ uint16_t crypto_init(uint16_t req_size, const uint8_t* req, uint16_t* resp_size,
 
 /** \brief use a crypto context
  *
- *  L1_crypto_update : (
+ *  crypto_update : (
  *      sid:ui32, flags:ui16, datain1-len:ui16, datain2-len:ui16, pad-to-16[6],
  *      datain1[datain1-len], pad-to-16[...], datain2[datain2-len])
  *  => (dataout-len, pad-to-16[14], dataout[dataout-len])
@@ -449,7 +450,6 @@ bool se3_payload_encrypt(se3_payload_cryptoctx* ctx, uint8_t* auth, uint8_t* iv,
 		default: return false; break;
 	}
 
-//TODO: To be surrounded with switch case
     if (flags & SE3_CMDFLAG_SIGN) {
         B5_HmacSha256_Init(&(ctx->hmac), ctx->hmac_key, B5_AES_256);
         B5_HmacSha256_Update(&(ctx->hmac), iv, B5_AES_IV_SIZE);
@@ -465,7 +465,6 @@ bool se3_payload_encrypt(se3_payload_cryptoctx* ctx, uint8_t* auth, uint8_t* iv,
 
 bool se3_payload_decrypt(se3_payload_cryptoctx* ctx, const uint8_t* auth, const uint8_t* iv, uint8_t* data, uint16_t nblocks, uint16_t flags, uint8_t crypto_algo)
 {
-	//TODO: To be surrounded with switch case
     if (flags & SE3_CMDFLAG_SIGN) {
         B5_HmacSha256_Init(&(ctx->hmac), ctx->hmac_key, B5_AES_256);
         B5_HmacSha256_Update(&(ctx->hmac), iv, B5_AES_IV_SIZE);

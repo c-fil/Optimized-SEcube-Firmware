@@ -19,7 +19,7 @@ enum {
  *   @defgroup AccessLogin
  *   @{
  *  	@brief Use this values as access parameter
- *  		   when using L1_login
+ *  		   when using login
  */
 enum {
     SE3_ACCESS_USER = 100,	
@@ -43,19 +43,19 @@ enum {
     SE3_RECORD_TYPE_USERPIN = 1
 };
 
-/** L1 field size definitions */
+/** field size definitions */
 enum {
-    SE3_L1_PIN_SIZE = 32,
-    SE3_L1_KEY_SIZE = 32,
-    SE3_L1_AUTH_SIZE = 16,
-    SE3_L1_CRYPTOBLOCK_SIZE = 16,
-    SE3_L1_CHALLENGE_SIZE = 32,
-	SE3_L1_CHALLENGE_ITERATIONS = 32,
-    SE3_L1_IV_SIZE = 16,
-    SE3_L1_TOKEN_SIZE = 16
+    SE3_PIN_SIZE = 32,
+    SE3_KEY_SIZE = 32,
+    SE3_AUTH_SIZE = 16,
+    SE3_CRYPTOBLOCK_SIZE = 16,
+    SE3_CHALLENGE_SIZE = 32,
+	SE3_CHALLENGE_ITERATIONS = 32,
+    SE3_IV_SIZE = 16,
+    SE3_TOKEN_SIZE = 16
 };
 
-/** L1 request fields definitions */
+/** request fields definitions */
 enum {
     SE3_REQ1_OFFSET_AUTH = 0,
     SE3_REQ1_OFFSET_IV = 16,
@@ -68,7 +68,7 @@ enum {
 };
 
 
-/** L1 response fields definitions */
+/** response fields definitions */
 enum {
     SE3_RESP1_OFFSET_AUTH = 0,
     SE3_RESP1_OFFSET_IV = 16,
@@ -80,7 +80,7 @@ enum {
     SE3_RESP1_MAX_DATA = (SE3_RESP_MAX_DATA - SE3_RESP1_OFFSET_DATA)
 };
 
-/** L1 command codes */
+/** command codes */
 enum {
     SE3_CMD1_CHALLENGE = 1,
     SE3_CMD1_LOGIN = 2,
@@ -95,13 +95,13 @@ enum {
 
 };
 
-/** L1_config operations */
+/** config operations */
 enum {
     SE3_CONFIG_OP_GET = 1,
     SE3_CONFIG_OP_SET = 2
 };
 
-/** L1_config fields */
+/** config fields */
 enum {
     SE3_CMD1_CONFIG_REQ_OFF_ID = 0,
     SE3_CMD1_CONFIG_REQ_OFF_OP = 2,
@@ -109,7 +109,7 @@ enum {
     SE3_CMD1_CONFIG_RESP_OFF_VALUE = 0
 };
 
-/** L1_challenge fields */
+/** challenge fields */
 enum {
     SE3_CMD1_CHALLENGE_REQ_OFF_CC1 = 0,
     SE3_CMD1_CHALLENGE_REQ_OFF_CC2 = 32,
@@ -120,7 +120,7 @@ enum {
     SE3_CMD1_CHALLENGE_RESP_SIZE = 64
 };
 
-/** L1_login fields */
+/** login fields */
 enum {
     SE3_CMD1_LOGIN_REQ_OFF_CRESP = 0,
     SE3_CMD1_LOGIN_REQ_SIZE = 32,
@@ -139,7 +139,7 @@ enum {
 /**
  *  @defgroup KeyOpEdit
  *  @{
- *  @brief Use these values when using \ref L1_key_edit
+ *  @brief Use these values when using \ref key_edit
  */
 enum {
     SE3_KEY_OP_INSERT = 1,		/**< Use this value to insert a new key*/
@@ -150,7 +150,7 @@ enum {
  *  @}
  */
 
-/** L1_key_edit fields */
+/** key_edit fields */
 enum {
     SE3_CMD1_KEY_EDIT_REQ_OFF_OP = 0,
     SE3_CMD1_KEY_EDIT_REQ_OFF_ID = 2,
@@ -161,7 +161,7 @@ enum {
 };
 
 
-/** L1_key_list fields */
+/** key_list fields */
 enum {
     SE3_CMD1_KEY_LIST_REQ_SIZE = 36,
     SE3_CMD1_KEY_LIST_REQ_OFF_SKIP = 0,
@@ -203,7 +203,7 @@ enum {
  *  @}
  */
 
-/** L1_crypto_init fields */
+/** crypto_init fields */
 enum {
     SE3_CMD1_CRYPTO_INIT_REQ_SIZE = 8,
     SE3_CMD1_CRYPTO_INIT_REQ_OFF_ALGO = 0,
@@ -213,7 +213,7 @@ enum {
     SE3_CMD1_CRYPTO_INIT_RESP_OFF_SID = 0
 };
 
-/** L1_crypto_update fields */
+/** crypto_update fields */
 enum {
     SE3_CMD1_CRYPTO_UPDATE_REQ_OFF_SID = 0,
     SE3_CMD1_CRYPTO_UPDATE_REQ_OFF_FLAGS = 4,
@@ -225,7 +225,7 @@ enum {
     SE3_CMD1_CRYPTO_UPDATE_RESP_OFF_DATA = 16
 };
 
-/** L1_crypto_update default flags */
+/** crypto_update default flags */
 enum {
 	SE3_CRYPTO_FLAG_FINIT = (1 << 15),
 	SE3_CRYPTO_FLAG_RESET = (1 << 14),
@@ -234,19 +234,19 @@ enum {
 	SE3_CRYPTO_FLAG_AUTH = (1 << 12)
 };
 
-/** L1_crypto_update maximum buffer sizes */
+/** crypto_update maximum buffer sizes */
 enum {
     SE3_CRYPTO_MAX_DATAIN = (SE3_REQ1_MAX_DATA - SE3_CMD1_CRYPTO_UPDATE_REQ_OFF_DATA),
     SE3_CRYPTO_MAX_DATAOUT = (SE3_RESP1_MAX_DATA - SE3_CMD1_CRYPTO_UPDATE_RESP_OFF_DATA)
 };
 
-/** L1_crypto_set_time fields */
+/** crypto_set_time fields */
 enum {
     SE3_CMD1_CRYPTO_SET_TIME_REQ_SIZE = 4,
     SE3_CMD1_CRYPTO_SET_TIME_REQ_OFF_DEVTIME = 0
 };
 
-/** L1_crypto_list fields */
+/** crypto_list fields */
 enum {
     SE3_CMD1_CRYPTO_LIST_REQ_SIZE = 0,
     SE3_CMD1_CRYPTO_LIST_RESP_OFF_COUNT = 0,
@@ -261,7 +261,7 @@ enum {
     SE3_CMD1_CRYPTO_ALGOINFO_NAME_SIZE = 16
 };
 
-/** L1_crypto_list default cipher types */
+/** crypto_list default cipher types */
 enum {
 	SE3_CRYPTO_TYPE_BLOCKCIPHER = 0,
 	SE3_CRYPTO_TYPE_STREAMCIPHER = 1,
@@ -271,7 +271,7 @@ enum {
 };
 
 #define SE3_DIR_SHIFT (8)
-/**  \brief L1_crypto_init default modes
+/**  \brief crypto_init default modes
   *  
   *  One FEEDBACK and one DIR may be combined to specify the desired mode
   *  Example:

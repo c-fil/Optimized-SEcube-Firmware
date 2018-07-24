@@ -1,13 +1,18 @@
 /**
  *  \file se3_communication_core.h
  *  \author Nicola Ferri
+ *  \co-author Filippo Cottone, Pietro Scandale, Francesco Vaiana, Luca Di Grazia
  *  \brief USB read/write handlers
  */
 
 #pragma once
 
 #include "se3_common.h"
+
+
 #define SE3_BMAP_MAKE(n) ((uint32_t)(0xFFFFFFFF >> (32 - (n))))
+
+
 /** \brief structure holding host-device communication status and buffers
  *
  *  req_ready and resp_ready must be volatile, otherwise -O3 optimization will not work.

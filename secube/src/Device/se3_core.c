@@ -1,6 +1,7 @@
 /**
  *  \file se3_core.c
  *  \author Nicola Ferri
+ *  \co-author Filippo Cottone, Pietro Scandale, Francesco Vaiana, Luca Di Grazia
  *  \brief Main Core
  */
 
@@ -19,6 +20,8 @@
 #define SE3_FLASH_SIGNATURE_ADDR  ((uint32_t)0x08020000)
 #define SE3_FLASH_SIGNATURE_SIZE  ((size_t)0x40)
 
+
+
 uint8_t se3_sessions_buf[SE3_SESSIONS_BUF];
 uint8_t* se3_sessions_index[SE3_SESSIONS_MAX];
 
@@ -29,62 +32,31 @@ void device_init()
 	se3_time_init();
 	se3_flash_init();
     se3_dispatcher_init();
+
+#ifdef SE3_DEBUG_SD
     se3_create_log_file();
-	//count_up_to(300);
     se3_write_trace(se3_debug_create_string("\n[se3_core_mio] Device Initalizations complete...\0"), debug_address++);
+#endif
+
 }
 
 void device_loop()
 {
 	uint32_t cnt = 0;
-	se3_write_trace(se3_debug_create_string("\nEntering in device_loop...\0"), debug_address++);
-	char str1 [512];
-	int cnt2=0;
+	/*se3_write_trace(se3_debug_create_string("\nEntering in device_loop...\0"), debug_address++);*/
 
 	for (;;) {
 
 		if (comm.req_ready) {
-			se3_write_trace(se3_debug_create_string("\nreq_ready == true, executing cmd...\0"), debug_address++);
+			/*se3_write_trace(se3_debug_create_string("\nreq_ready == true, executing cmd...\0"), debug_address++);*/
 			comm.resp_ready = false;
 			cnt = 0;
             se3_cmd_execute();
 			comm.req_ready = false;
 			comm.resp_ready = true;
 		}
-		else
-		{
-			//if((flagsleep2==0) && (flagsleep1 ==0))
-			if(++cnt == 40000000*5)
-			{
-				//flagsleep1 = 1;
-				//flagsleep2 = 1;
-				//sprintf(str1,"\n[%d] Entering in low power... %d , \0", (uint32_t)se3_time_get(),cnt);
-				//se3_write_trace(se3_debug_create_string(str1), debug_address++);
-		//		HAL_NVIC_DisableIRQ(SDIO_IRQn);
-		//		HAL_NVIC_DisableIRQ(DMA2_Stream3_IRQn);
-		//		HAL_NVIC_DisableIRQ(DMA2_Stream6_IRQn);
-				HAL_NVIC_DisableIRQ(SysTick_IRQn);
-
-//				sprintf(str1,"\n[%d] entering in low power... \0", (uint32_t)se3_time_get());
-//				se3_write_trace(se3_debug_create_string(str1), debug_address++);
-
-				HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
-
-				HAL_NVIC_EnableIRQ(SysTick_IRQn);
-		//		HAL_NVIC_EnableIRQ(SDIO_IRQn);
-
-		//		sprintf(str1,"\n[%d] exiting in low power... \0", (uint32_t)se3_time_get());
-		//		se3_write_trace(se3_debug_create_string(str1), debug_address++);
-				cnt = 0;
-				cnt2++;
-			}
-			if(cnt2 == 5){
-				sprintf(str1,"\n[%d] exiting in low power... \0", (uint32_t)se3_time_get());
-				se3_write_trace(se3_debug_create_string(str1), debug_address++);
-				cnt2=0;
-			}
-		}
 	}
+
 }
 
 static uint16_t invalid_cmd_handler(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp)

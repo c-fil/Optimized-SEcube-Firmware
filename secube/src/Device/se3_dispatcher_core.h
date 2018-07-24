@@ -1,6 +1,7 @@
 /**
  *  \file se3_dispatcher_core.h
  *  \author Nicola Ferri
+ *  \co-author Filippo Cottone, Pietro Scandale, Francesco Vaiana, Luca Di Grazia
  *  \brief Dispatcher core
  */
 
@@ -13,16 +14,16 @@
 #define SE3_CMD1_MAX 	16
 #define SE3_N_HARDWARE 	3
 
-/** \brief L1 login status data */
+/** \brief login status data */
 typedef struct SE3_LOGIN_STATUS_ {
     bool y;  ///< logged in
     uint16_t access;  ///< access level
     uint16_t challenge_access;  ///< access level of the last offered challenge
     union {
-        uint8_t token[SE3_L1_TOKEN_SIZE];   ///< login token
-        uint8_t challenge[SE3_L1_CHALLENGE_SIZE];  ///< login challenge response expected
+        uint8_t token[SE3_TOKEN_SIZE];   ///< login token
+        uint8_t challenge[SE3_CHALLENGE_SIZE];  ///< login challenge response expected
     };
-    uint8_t key[SE3_L1_KEY_SIZE];  ///< session key for protocol encryption
+    uint8_t key[SE3_KEY_SIZE];  ///< session key for protocol encryption
     se3_payload_cryptoctx cryptoctx;  ///< context for protocol encryption
     bool cryptoctx_initialized;  ///< context initialized flag
 } SE3_LOGIN_STATUS;
@@ -77,7 +78,7 @@ uint16_t dispatcher_call(uint16_t req_size, const uint8_t* req, uint16_t* resp_s
  *  Cleans all data associated with the login session, making SEcube ready for a new login.
  */
 
-/** \brief Initialize L1 structures */
+/** \brief Initialize structures */
 void se3_dispatcher_init();
 
 /** \brief sets the req\_hdr data structure to the structure passed as parameter; */
@@ -106,7 +107,7 @@ static se3_cmd_func handlers[SE3_N_HARDWARE][SE3_CMD1_MAX] = {{
     /* 14 */ NULL,
     /* 15 */ error
 }, {
-//FPGA
+//FPGA: when developed, the function will have to be added here
     /* 0  */ NULL,
     /* 1  */ NULL,
     /* 2  */ NULL,
@@ -124,7 +125,7 @@ static se3_cmd_func handlers[SE3_N_HARDWARE][SE3_CMD1_MAX] = {{
     /* 14 */ NULL,
     /* 15 */ NULL
 }, {
-//Smartcard
+//Smartcard: when developed, the function will have to be added here
     /* 0  */ NULL,
     /* 1  */ NULL,
     /* 2  */ NULL,
