@@ -1,7 +1,7 @@
 /**
  *  \file se3_core.c
- *  \author Filippo Cottone, Luca Di Grazia, Pietro Scandale, Francesco Vaiana
- *  \brief
+ *  \author Nicola Ferri
+ *  \brief Main Core
  */
 
 #include "se3_core.h"
@@ -10,6 +10,10 @@
 #include "se3_timer.h"
 #include "crc16.h"
 #include "se3_rand.h"
+
+#include "stm32f4xx_hal_cortex.h"
+#include "stm32f4xx_it.h"
+
 
 
 #define SE3_FLASH_SIGNATURE_ADDR  ((uint32_t)0x08020000)
@@ -35,8 +39,7 @@ void device_loop()
 	uint32_t cnt = 0;
 	se3_write_trace(se3_debug_create_string("\nEntering in device_loop...\0"), debug_address++);
 	char str1 [512];
-
-	__HAL_RCC_PWR_CLK_ENABLE();
+	int cnt2=0;
 
 	for (;;) {
 
@@ -49,17 +52,38 @@ void device_loop()
 			comm.resp_ready = true;
 		}
 		else
-			cnt++;
-		if(cnt == 200000000)
 		{
-			sprintf(str1,"\n[%d] Entering in low power...\0",se3_time_get());
-			se3_write_trace(se3_debug_create_string(str1), debug_address++);
-			HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
-			sprintf(str1,"\n[%d] exiting in low power...\0",se3_time_get());
-			se3_write_trace(se3_debug_create_string(str1), debug_address++);
-			cnt = 0;
-		}
+			//if((flagsleep2==0) && (flagsleep1 ==0))
+			if(++cnt == 40000000*5)
+			{
+				//flagsleep1 = 1;
+				//flagsleep2 = 1;
+				//sprintf(str1,"\n[%d] Entering in low power... %d , \0", (uint32_t)se3_time_get(),cnt);
+				//se3_write_trace(se3_debug_create_string(str1), debug_address++);
+		//		HAL_NVIC_DisableIRQ(SDIO_IRQn);
+		//		HAL_NVIC_DisableIRQ(DMA2_Stream3_IRQn);
+		//		HAL_NVIC_DisableIRQ(DMA2_Stream6_IRQn);
+				HAL_NVIC_DisableIRQ(SysTick_IRQn);
 
+//				sprintf(str1,"\n[%d] entering in low power... \0", (uint32_t)se3_time_get());
+//				se3_write_trace(se3_debug_create_string(str1), debug_address++);
+
+				HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+
+				HAL_NVIC_EnableIRQ(SysTick_IRQn);
+		//		HAL_NVIC_EnableIRQ(SDIO_IRQn);
+
+		//		sprintf(str1,"\n[%d] exiting in low power... \0", (uint32_t)se3_time_get());
+		//		se3_write_trace(se3_debug_create_string(str1), debug_address++);
+				cnt = 0;
+				cnt2++;
+			}
+			if(cnt2 == 5){
+				sprintf(str1,"\n[%d] exiting in low power... \0", (uint32_t)se3_time_get());
+				se3_write_trace(se3_debug_create_string(str1), debug_address++);
+				cnt2=0;
+			}
+		}
 	}
 }
 

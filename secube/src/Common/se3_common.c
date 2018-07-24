@@ -14,8 +14,6 @@ const uint8_t se3_magic[SE3_MAGIC_SIZE] = {
 //########################DEBUG##############################
 #ifdef SE3_DEBUG_SD
 
-
-
 #define HEADER_BASE_ADDRESS 40960
 #define BLOCK_0_BASE_ADDRESS 8193
 #define BLOCK_1_BASE_ADDRESS 10612
@@ -24,9 +22,7 @@ const uint8_t se3_magic[SE3_MAGIC_SIZE] = {
 #define UNKNOWN_BASE_ADDRESS 40992
 #define UNKNOWN2_BASE_ADDRESS 41008
 
-
 int debug_address = DATA_BASE_ADDRESS;
-
 
 bool se3_write_trace( char* buf, uint32_t blk_addr){
 
@@ -874,7 +870,6 @@ bool se3_create_log_file(){
 	return true;
 }
 
-
 char* se3_debug_create_string(char * string){
 
 	char* h_string;
@@ -884,10 +879,7 @@ char* se3_debug_create_string(char * string){
 	return h_string;
 }
 
-
 #endif
-
-//############################################################################
 
 uint16_t se3_req_len_data(uint16_t len_data_and_headers)
 {

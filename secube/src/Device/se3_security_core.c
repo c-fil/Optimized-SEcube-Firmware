@@ -1,3 +1,9 @@
+/**
+ *  \file se3_security_core.c
+ *  \author Nicola Ferri
+ *  \brief Security core
+ */
+
 #include "se3_security_core.h"
 #include "se3_flash.h"
 #include "se3_algo_Aes.h"
@@ -5,8 +11,6 @@
 #include "se3_algo_HmacSha256.h"
 #include "se3_algo_AesHmacSha256s.h"
 #include "se3_algo_aes256hmacsha256.h"
-
-
 
 /* Cryptographic algorithms handlers and display info for the security core ONLY. */
 se3_algo_descriptor algo_table[SE3_ALGO_MAX] = {
@@ -60,7 +64,10 @@ union {
     B5_tAesCtx aes;
 } ctx;
 
-
+void se3_security_core_init(){
+    memset(&ctx, 0, sizeof(ctx));
+    memset((void*)&se3_security_info, 0, sizeof(SE3_SECURITY_INFO));
+}
 
 static bool record_find(uint16_t record_type, se3_flash_it* it)
 {
@@ -114,7 +121,6 @@ bool record_set(uint16_t type, const uint8_t* data)
     return true;
 }
 
-
 bool record_get(uint16_t type, uint8_t* data)
 {
     se3_flash_it it;
@@ -129,10 +135,9 @@ bool record_get(uint16_t type, uint8_t* data)
     return true;
 }
 
-
 /** \brief initialize a crypto context
  *
- *  L1_crypto_init : (algo:ui16, mode:ui16, key_id:ui32) => (sid:ui32)
+ *  crypto_init : (algo:ui16, mode:ui16, key_id:ui32) => (sid:ui32)
  */
 uint16_t crypto_init(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8_t* resp)
 {
@@ -238,7 +243,6 @@ uint16_t crypto_init(uint16_t req_size, const uint8_t* req, uint16_t* resp_size,
 	return SE3_OK;
 }
 
-
 /** \brief use a crypto context
  *
  *  L1_crypto_update : (
@@ -341,7 +345,6 @@ uint16_t crypto_update(uint16_t req_size, const uint8_t* req, uint16_t* resp_siz
     return SE3_OK;
 }
 
-
 /** \brief set device time for key validity
  *
  *  crypto_set_time : (devtime:ui32) => ()
@@ -414,13 +417,6 @@ uint16_t crypto_list(uint16_t req_size, const uint8_t* req, uint16_t* resp_size,
     return SE3_OK;
 }
 
-void se3_security_core_init(){
-    memset(&ctx, 0, sizeof(ctx));
-    memset((void*)&se3_security_info, 0, sizeof(SE3_SECURITY_INFO));
-}
-
-
-
 void se3_payload_cryptoinit(se3_payload_cryptoctx* ctx, const uint8_t* key)
 {
 	uint8_t keys[2 * B5_AES_256];
@@ -431,6 +427,7 @@ void se3_payload_cryptoinit(se3_payload_cryptoctx* ctx, const uint8_t* key)
 	memcpy(ctx->hmac_key, keys + B5_AES_256, B5_AES_256);
 	memset(keys, 0, 2 * B5_AES_256);
 }
+
 bool se3_payload_encrypt(se3_payload_cryptoctx* ctx, uint8_t* auth, uint8_t* iv, uint8_t* data, uint16_t nblocks, uint16_t flags, uint8_t crypto_algo)
 {
 	switch(crypto_algo){
@@ -465,6 +462,7 @@ bool se3_payload_encrypt(se3_payload_cryptoctx* ctx, uint8_t* auth, uint8_t* iv,
     }
     return true;
 }
+
 bool se3_payload_decrypt(se3_payload_cryptoctx* ctx, const uint8_t* auth, const uint8_t* iv, uint8_t* data, uint16_t nblocks, uint16_t flags, uint8_t crypto_algo)
 {
 	//TODO: To be surrounded with switch case

@@ -8,7 +8,6 @@
 
 #define SE3_MEM_SIZE_GET(x, val) SE3_GET16(x, 0, (val))
 #define SE3_MEM_SIZE_SET(x, val) SE3_SET16(x, 0, (val))
-
 #define SE3_MEM_INFO_GET(x, info) SE3_GET16(x, 2, info)
 #define SE3_MEM_INFO_SET(x, info) SE3_SET16(x, 2, info)
 #define SE3_MEM_INFO_MAKE(id, valid) ((id) | ((valid)?(1):(0)) << 15 )
@@ -224,7 +223,6 @@ int32_t se3_mem_alloc(se3_mem* mem, size_t size)
 
 	return (int32_t)i;
 }
-
 
 uint8_t* se3_mem_ptr(se3_mem* mem, int32_t id)
 {

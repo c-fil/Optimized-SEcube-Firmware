@@ -1,4 +1,8 @@
-
+/**
+ *  \file se3_flash.c
+ *  \author Nicola Ferri
+ *  \brief Flash management
+ */
 
 #include "se3_flash.h"
 #include "se3_common.h"
@@ -58,7 +62,6 @@ static bool flash_program(uint32_t addr, const uint8_t* data, size_t size)
     }
 	return success;
 }
-
 
 static bool flash_erase(uint32_t sector) {
     bool success = true;
@@ -174,7 +177,6 @@ static bool flash_swap()
 	return true;
 }
 
-
 void se3_flash_info_setup(uint32_t sector, const uint8_t* base)
 {
 	flash.base = base;
@@ -258,7 +260,6 @@ bool se3_flash_it_write(se3_flash_it* it, uint16_t off, const uint8_t* data, uin
     return flash_program((uint32_t)it->addr + off, data, size);
 }
 
-
 void se3_flash_it_init(se3_flash_it* it)
 {
 	it->addr = NULL;
@@ -295,7 +296,6 @@ bool se3_flash_it_next(se3_flash_it* it)
 	}
 	return false;
 }
-
 
 size_t se3_flash_unused()
 {
@@ -351,7 +351,6 @@ bool se3_flash_it_new(se3_flash_it* it, uint8_t type, uint16_t size)
 
 	return true;
 }
-
 
 bool se3_flash_pos_delete(size_t pos)
 {

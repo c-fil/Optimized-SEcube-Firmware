@@ -1,5 +1,5 @@
 /**
- *  \file se3_proto.c
+ *  \file se3_communication_core.c
  *  \author Nicola Ferri
  *  \brief USB read/write handlers
  */

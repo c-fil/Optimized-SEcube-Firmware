@@ -1,3 +1,9 @@
+/**
+ *  \file se3_dispatcher_core.c
+ *  \author Nicola Ferri
+ *  \brief Dispatcher core
+ */
+
 #include "se3_dispatcher_core.h"
 
 uint8_t algo_implementation;
@@ -11,8 +17,6 @@ uint16_t error(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8
 {
     return SE3_ERR_CMD;
 }
-
-
 
 /** \brief set or get configuration record
  *
@@ -85,8 +89,6 @@ uint16_t config(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint
 
 	return SE3_OK;
 }
-
-
 
 /*
     Challenge-based authentication
@@ -245,7 +247,6 @@ uint16_t login(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint8
 	return SE3_OK;
 }
 
-
 /** \brief Log out and release resources
  *
  *  logout : () => ()
@@ -263,7 +264,6 @@ uint16_t logout(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, uint
 	login_cleanup();
 	return SE3_OK;
 }
-
 
 /** \brief insert, delete or update key
  *
@@ -364,8 +364,6 @@ uint16_t key_edit(uint16_t req_size, const uint8_t* req, uint16_t* resp_size, ui
 
 	return SE3_OK;
 }
-
-
 
 /** \brief list all keys in device
  *
@@ -582,7 +580,6 @@ uint16_t dispatcher_call(uint16_t req_size, const uint8_t* req, uint16_t* resp_s
     return SE3_OK;
 }
 
-
 void se3_dispatcher_init()
 {
 	se3_security_core_init();
@@ -604,12 +601,9 @@ void se3_dispatcher_init()
     login_cleanup();
 }
 
-
-
 void set_req_hdr(se3_comm_req_header req_hdr_i){
 	req_hdr = req_hdr_i;
 }
-
 
 static void login_cleanup()
 {
