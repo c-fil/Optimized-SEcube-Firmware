@@ -81,7 +81,7 @@ typedef struct se3_payload_cryptoctx_ {
 /** \brief Write record
  *
  *  Set data of a record
- *  \remark if a flash operation fails, the hwerror flag (se3c0.hwerror) is set.
+ *  \remark if a flash operation fails, the hwerror flag is set.
  *  \param type type of record
  *  \param data new data to be written to record
  *  \return true on success; false if the record does not exist
