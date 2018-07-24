@@ -1,3 +1,9 @@
+/**
+ *  \file se3_communication_core.h
+ *  \author Nicola Ferri
+ *  \brief USB read/write handlers
+ */
+
 #pragma once
 
 #include "se3_common.h"
@@ -55,7 +61,7 @@ const uint8_t se3_hello[SE3_HELLO_SIZE];
 
 
 
-
+/**\brief Initializes the communication core structures */
 void se3_communication_core_init();
 
 

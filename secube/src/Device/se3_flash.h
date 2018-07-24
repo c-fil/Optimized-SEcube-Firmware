@@ -5,13 +5,11 @@
  */
 
 #pragma once
-//#include "se3c0.h"
-#include <stdbool.h>
-
 
 #ifndef CUBESIM
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal.h"
+#include <stdbool.h>
 #define SE3_FLASH_S0  (FLASH_SECTOR_10)
 #define SE3_FLASH_S1  (FLASH_SECTOR_11)
 #define SE3_FLASH_S0_ADDR  ((uint32_t)0x080C0000)
@@ -51,6 +49,22 @@ typedef struct SE3_FLASH_INFO_ {
     size_t allocated;
 } SE3_FLASH_INFO;
 
+/** Flash nodes' default and reserved types */
+enum {
+	SE3_FLASH_TYPE_INVALID = 0,  ///< Invalid node
+	SE3_FLASH_TYPE_SERIAL = 1,  ///< Device's serial number
+	SE3_FLASH_TYPE_CONT = 0xFE,  ///< Continuation of previous node
+	SE3_FLASH_TYPE_EMPTY = 0xFF  ///< Not written yet
+};
+
+/** Flash fields sizes */
+enum {
+	SE3_FLASH_MAGIC_SIZE = 32,
+	SE3_FLASH_INDEX_SIZE = 2016,
+	SE3_FLASH_BLOCK_SIZE = 64,
+	SE3_FLASH_NODE_MAX = (4 * 1024),
+	SE3_FLASH_NODE_DATA_MAX = (SE3_FLASH_NODE_MAX - 2)
+};
 
 /** \brief Initialize flash
  *  
@@ -143,23 +157,5 @@ void se3_flash_info_setup(uint32_t sector, const uint8_t* base);
  *  \param size signature size
  */
 bool se3_flash_bootmode_reset(uint32_t addr, size_t size);
-
-/** Flash nodes' default and reserved types */
-enum {
-	SE3_FLASH_TYPE_INVALID = 0,  ///< Invalid node
-	SE3_FLASH_TYPE_SERIAL = 1,  ///< Device's serial number
-	SE3_FLASH_TYPE_CONT = 0xFE,  ///< Continuation of previous node
-	SE3_FLASH_TYPE_EMPTY = 0xFF  ///< Not written yet
-};
-
-/** Flash fields sizes */
-enum {
-	SE3_FLASH_MAGIC_SIZE = 32,
-	SE3_FLASH_INDEX_SIZE = 2016,
-	SE3_FLASH_BLOCK_SIZE = 64,
-	SE3_FLASH_NODE_MAX = (4 * 1024),
-	SE3_FLASH_NODE_DATA_MAX = (SE3_FLASH_NODE_MAX - 2)
-};
-
 
 

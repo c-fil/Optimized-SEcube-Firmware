@@ -8,8 +8,6 @@
 
 extern const uint8_t se3_magic[SE3_MAGIC_SIZE];
 
-
-
 #ifndef se3_serial_def
 #define se3_serial_def
 typedef struct SE3_SERIAL_ {
@@ -29,18 +27,14 @@ typedef struct se3_comm_req_header_ {
     uint32_t cmdtok[SE3_COMM_N - 1];
 } se3_comm_req_header;
 
-
 SE3_SERIAL serial;
 
 uint16_t hwerror;
 
-
 //########################DEBUG##############################
 #define SE3_DEBUG_SD
 
-
 #ifdef SE3_DEBUG_SD
-
 
 #define DATA_BASE_ADDRESS 41024
 
@@ -49,14 +43,10 @@ uint16_t hwerror;
  */
 bool se3_create_log_file();
 
-
-
 /** \brief flush the SEcube SD card blocks starting from the block start_address to the block end_address
  *
  */
 bool se3_debug_sd_flush(uint32_t start_address, uint32_t end_address);
-
-
 
 /** \brief write a trace on the log file in the specified address. N.B.: the string passed as parameter must be a function call to the
  * se3_debug_create_string function
@@ -64,13 +54,11 @@ bool se3_debug_sd_flush(uint32_t start_address, uint32_t end_address);
  */
 bool se3_write_trace( char* buf, uint32_t blk_addr);
 
-
 /** \brief prepare a correctly formatted string to be written with se3_write_trace function. N.B.: in order to get the best
  * 			readability, please insert before the string the '\n' character and a '\0' at the end of the string.
  *
  */
 char* se3_debug_create_string(char * string);
-
 
 /** \brief Global variable used to write the strings one after the other following a time line, in order to keep track
  * 		   of the temporal dependencies among the function calls. It will be initialised to DATA_BASE_ADDRESS and then
@@ -78,10 +66,9 @@ char* se3_debug_create_string(char * string);
  */
 extern debug_address;
 
-
 /*  DEBUG TOOL USAGE EXAMPLE:
  *
- * 1) If commented, decomment '#define SE3_DEBUG_SD' in this file.
+ * 1) If commented, de-comment '#define SE3_DEBUG_SD' in this file.
  * 2) Inside the device_init() function (se3_core.c file), add se3_create_log_file(); it will include a se3_debug_sd_flush() function call.
  * 3) Inside wherever you want, add se3_write_trace(se3_debug_create_string("\nHello World!\0"), debug_address++);
  * 4) Build your project and program the chip.
@@ -90,7 +77,6 @@ extern debug_address;
 
 #endif
 //##############################################################
-
 
 /**
  *  \brief Compute length of data in a request in terms of SE3_COMM_BLOCK blocks
@@ -137,12 +123,6 @@ uint16_t se3_resp_len_data_and_headers(uint16_t len_data);
  */
 uint16_t se3_nblocks(uint16_t len);
 
-/*
-enum {
-	SE3_PAYL_CRYPTO = 1,
-	SE3_PAYL_SIGN = 2,
-	SE3_PAYL_CRYPTO_SIGN = 3
-};*/
 
 
 
